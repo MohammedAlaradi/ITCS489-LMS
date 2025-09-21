@@ -14,5 +14,5 @@ This repository is dedicated for implementing the LMS as a part of ITCS489-Softw
 
 <p>JS Framework: Bootstrap <a href="https://getbootstrap.com/">Bootsrap</a></p>
 
-Scroll down to "Incude via CDN" and copy the link of the framework and include it in html
+Scroll down to "Incude via CDN" and copy the link of the framework and include it in html <br>
 <strong>Please Follow The Design In The Report!</strong>
