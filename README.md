@@ -7,3 +7,7 @@ This repository is dedicated for implementing the LMS as a part of ITCS489-Softw
 <tr> <td>Ali Alalwan</td> <td> Add, Update, Delete</td> </tr>
 <tr> <td>Abdulrahman Mohammed</td> <td> Report generation, Fine update</td> </tr>
 </table>
+
+<a href="https://colorhunt.co/palette/ddf4e767c09026667f124170">Color Palette</a>
+
+<strong>Please Follow The Design In The Report!</strong>
