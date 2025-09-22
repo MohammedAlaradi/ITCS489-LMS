@@ -168,3 +168,7 @@ hr{
   background-color: rgb(32, 141, 32);
   border-color: rgb(32, 141, 32);
 }
+
+.rounded{
+  border-radius: 0.375rem;
+}
