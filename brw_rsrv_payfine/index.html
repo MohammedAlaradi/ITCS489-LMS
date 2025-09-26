@@ -67,7 +67,7 @@
                         </button>
 
             <!-- Search Bar (Left corners not rounded) -->
-            <input type="text" id="searchInput" class="form-control" placeholder="Search For Book..." style="border-radius: 0.375rem 0 0 0.375rem; min-width: 120px; border-right: none; margin-left: 0;">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search For a Book..." style="border-radius: 0.375rem 0 0 0.375rem; min-width: 120px; border-right: none; margin-left: 0;">
 
             <!-- Filter Dropdown (No rounded corners) -->
             <div class="dropdown flex-shrink-0" style="margin-left: -1px;">
@@ -77,14 +77,14 @@
                 <ul id="genreFilter" class="dropdown-menu" aria-labelledby="filterDropdown">
                     <!-- Category Header and Options -->
                     <li><h6 class="dropdown-header">Genre</h6></li>
-                    <li><a class="dropdown-item" >Literature</a></li>
-                    <li><a class="dropdown-item" >Sci-Fi</a></li>
-                    <li><a class="dropdown-item" >Sports</a></li>
-                    <li><a class="dropdown-item" >Novel</a></li>
-                    <li><a class="dropdown-item" >Fantasy</a></li>
-                    <li><a class="dropdown-item" >Computer</a></li>
-                    <li><a class="dropdown-item" >Mystery</a></li>
-                    <li><a class="dropdown-item" >Others</a></li>
+                    <li><a class="dropdown-item" value="Literature">Literature</a></li>
+                    <li><a class="dropdown-item" value="Sci-Fi">Sci-Fi</a></li>
+                    <li><a class="dropdown-item" value="Sports">Sports</a></li>
+                    <li><a class="dropdown-item" value="Novel">Novel</a></li>
+                    <li><a class="dropdown-item" value="Fantasy">Fantasy</a></li>
+                    <li><a class="dropdown-item" value="Computer">Computer</a></li>
+                    <li><a class="dropdown-item" value="Mystery">Mystery</a></li>
+                    <li><a class="dropdown-item" value="Others">Others</a></li>
                 </ul>
             </div>
         
@@ -115,20 +115,7 @@
                                     <label for="bookISBN" class="form-label">ISBN</label>
                                     <input type="number" placeholder="Enter The Book ISBN" class="form-control" id="bookISBN" required>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="Book" class="form-label" title="Select The Book Genre ">Genre</label>
-                                    <select class="form-control" id="bookGenre" required>
-                                        <option value="" disabled selected>Select Genre</option>
-                                        <option value="Volleyball">Literature</option>
-                                        <option value="Basketball">Sci-Fi</option>
-                                        <option value="Football">Sports</option>
-                                        <option value="Swimming">Novel</option>
-                                        <option value="Literature">Fantasy</option>
-                                        <option value="Theater">Computer</option>
-                                        <option value="Technology">Mystery</option>
-                                        <option value="Others">Others</option>
-                                    </select>
-                                </div>
+                                
                                 <div class="mb-3">
                                     <label class="form-label" for="yearOfPublish">Year Of Publish:</label>
                                     <input type="number" class="form-control" id="yearOfPublish" name="yearOfPublish" min="1900" max="2025" step="1" pattern="\\d{4}" placeholder="e.g. 2023" required>
