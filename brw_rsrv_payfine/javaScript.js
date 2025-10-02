@@ -6,6 +6,62 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Search input
   const searchInput = document.getElementById("searchInput");
+  // Year input validation: only accept 4-digit years between 1900 and current year
+  const yearInput = document.getElementById("yearOfPublish");
+  const currentYear = new Date().getFullYear();
+  if (yearInput) {
+    // ensure HTML min/max align with current year
+    yearInput.setAttribute('min', '1900');
+    yearInput.setAttribute('max', String(currentYear));
+    // allow numeric keypad on mobile
+    yearInput.setAttribute('inputmode', 'numeric');
+
+    // sanitize input to digits only and max length 4
+    yearInput.addEventListener('input', () => {
+      const cleaned = yearInput.value.replace(/\D/g, '').slice(0, 4);
+      if (cleaned !== yearInput.value) yearInput.value = cleaned;
+    });
+
+    // validate on blur and show message if invalid
+    yearInput.addEventListener('blur', () => {
+      if (!yearInput.value) {
+        yearInput.setCustomValidity('');
+        return;
+      }
+      const y = parseInt(yearInput.value, 10);
+      if (isNaN(y) || yearInput.value.length !== 4 || y < 1900 || y > currentYear) {
+        yearInput.setCustomValidity(`Please enter a four-digit year between 1900 and ${currentYear}.`);
+        yearInput.reportValidity();
+      } else {
+        yearInput.setCustomValidity('');
+      }
+    });
+  }
+
+  // ISBN input validation: only accept 13-digit numbers
+  const isbnInput = document.getElementById("bookISBN");
+  if (isbnInput) {
+    // use inputmode numeric for mobile and keep value as string
+    isbnInput.setAttribute('inputmode', 'numeric');
+    // sanitize to digits and limit to 13 chars
+    isbnInput.addEventListener('input', () => {
+      const cleaned = isbnInput.value.replace(/\D/g, '').slice(0, 13);
+      if (cleaned !== isbnInput.value) isbnInput.value = cleaned;
+    });
+    // validate on blur
+    isbnInput.addEventListener('blur', () => {
+      if (!isbnInput.value) {
+        isbnInput.setCustomValidity('');
+        return;
+      }
+      if (isbnInput.value.length !== 13) {
+        isbnInput.setCustomValidity('Please enter a 13-digit ISBN.');
+        isbnInput.reportValidity();
+      } else {
+        isbnInput.setCustomValidity('');
+      }
+    });
+  }
 
   // Generate 30 dummy books for demonstration
   Books = Array.from({ length: 30 }, (_, i) => ({
@@ -50,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
       BooksContainer.appendChild(bookCard);
     });
     // Add event listeners for view more buttons
-    const viewButtons = document.querySelectorAll(".btn-success");
+    const viewButtons = document.querySelectorAll(".card .btn-primary");
     viewButtons.forEach((button, index) => {
       button.addEventListener("click", (e) => {
         e.preventDefault();
@@ -58,6 +114,18 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("selectedBook", JSON.stringify(book));
       });
     });
+  }
+
+  // Keep track of current sort order so sorting persists across filters
+  let sortOrder = null; // 'asc' or 'desc'
+
+  function applySort() {
+    if (!sortOrder) return;
+    if (sortOrder === 'asc') {
+      filteredBooks.sort((a, b) => a.yearOfPublish - b.yearOfPublish);
+    } else if (sortOrder === 'desc') {
+      filteredBooks.sort((a, b) => b.yearOfPublish - a.yearOfPublish);
+    }
   }
 
   // Setup pagination controls (for filteredBooks)
@@ -89,6 +157,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function filterBooks() {
     const search = searchInput.value.trim().toLowerCase();
     const isbn = document.getElementById("bookISBN").value.trim();
+    // If ISBN present but not 13 digits, show validation message and abort
+    if (isbn && isbnInput && isbnInput.value.length !== 13) {
+      isbnInput.setCustomValidity('Please enter a 13-digit ISBN.');
+      isbnInput.reportValidity();
+      return;
+    }
     const year = document.getElementById("yearOfPublish").value.trim();
     const author = document.getElementById("AuthorName").value.trim().toLowerCase();
 
@@ -125,6 +199,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       return true;
     });
+    // apply current sort (if any) so filtered results respect user choice
+    applySort();
     setupPagination(filteredBooks.length);
     showPage(1);
   }
@@ -173,8 +249,64 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Genre reset button (in dropdown)
+  const genreResetBtn = document.getElementById("genreReset");
+  if (genreResetBtn) {
+    genreResetBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (genreFilter) {
+        delete genreFilter.dataset.selected;
+        genreFilter.querySelectorAll(".dropdown-item").forEach(i => i.classList.remove("active"));
+      }
+      filterBooks();
+    });
+  }
+
+  // Sorting logic for filteredBooks (uses current filteredBooks array)
+  const sortDropdown = document.getElementById("sortDate");
+  if (sortDropdown) {
+    sortDropdown.querySelectorAll(".dropdown-item").forEach(item => {
+      item.addEventListener("click", function(e) {
+        e.preventDefault();
+        // Visually mark selected
+        sortDropdown.querySelectorAll(".dropdown-item").forEach(i => i.classList.remove("active"));
+        this.classList.add("active");
+        const value = this.getAttribute("value");
+        // Map dropdown values to behavior: 'a' -> Newest to Oldest (desc), 'd' -> Oldest to Newest (asc)
+        if (value === "a") {
+          sortOrder = 'desc';
+        } else if (value === "d") {
+          sortOrder = 'asc';
+        } else {
+          sortOrder = null;
+        }
+        // Apply sort and refresh
+        applySort();
+        setupPagination(filteredBooks.length);
+        showPage(1);
+      });
+    });
+  }
+
+  // Sort reset button
+  const sortResetBtn = document.getElementById("sortReset");
+  if (sortResetBtn) {
+    sortResetBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      // Clear visual selection
+      sortDropdown.querySelectorAll(".dropdown-item").forEach(i => i.classList.remove("active"));
+      sortOrder = null;
+      // Reapply filter (which will not sort) and refresh
+      filterBooks();
+    });
+  }
+
   // Initialize
   setupPagination(Books.length);
   showPage(1);
 });
 
+
+  // ...existing code...
+
+  // ...existing code...
