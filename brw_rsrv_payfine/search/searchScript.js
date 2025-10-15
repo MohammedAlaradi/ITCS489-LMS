@@ -79,6 +79,8 @@ document.addEventListener("DOMContentLoaded", () => {
     Books.forEach((b, idx) => {
       if (b.id == null) { b.id = `b${idx + 1}`; migrated = true; }
       if (b.copies == null) { b.copies = Math.floor(Math.random() * 5) + 1; migrated = true; }
+      if (b.isbn == null) { b.isbn = String(9780000000000 + idx).slice(0,13); migrated = true; }
+      if (b.edition == null) { b.edition = 1 + (idx % 3); migrated = true; }
     });
     if (migrated) {
       try { localStorage.setItem('Books', JSON.stringify(Books)); } catch (e) { console.error('Failed to persist migrated Books', e); }
@@ -92,7 +94,9 @@ document.addEventListener("DOMContentLoaded", () => {
       yearOfPublish: 2000 + (i % 25),
       author: `Author ${i + 1}`,
       image: "../ULiblogo.png",
-      copies: Math.floor(Math.random() * 5) + 1 // 1 to 5 copies
+      copies: Math.floor(Math.random() * 5) + 1, // 1 to 5 copies
+      isbn: String(9780000000000 + i).slice(0,13),
+      edition: 1 + (i % 3)
     }));
     // persist initial Books
     localStorage.setItem('Books', JSON.stringify(Books));
@@ -124,7 +128,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p class="card-text"><strong>Genre:</strong> ${book.genre}</p>
                 <p class="card-text"><strong>Year Of Publish:</strong> ${book.yearOfPublish}</p>
                 <p class="card-text"><strong>Author:</strong> ${book.author}</p>
-                <p class="card-text"><strong>Copies left:</strong> ${book.copies != null ? book.copies : 'N/A'}</p>
                 ${book.copies === 0 ? `<button class="btn btn-primary w-100 rounded reserve-btn">Reserve</button>` : `<button class="btn btn-primary w-100 rounded borrow-btn">Borrow</button>`}
               </div>
             </div>
