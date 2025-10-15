@@ -108,7 +108,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const BooksRow = BooksContainer;
     BooksRow.classList.remove("mb-4", "g-3", "g-2");
     BooksRow.classList.add("g-1");
-    filteredBooks.slice(start, end).forEach((book) => {
+    filteredBooks.slice(start, end).forEach((book, i) => {
+      const idx = start + i; // absolute index into filteredBooks for this page
       const bookCard = document.createElement("div");
       bookCard.classList.add("col-md-6", "mb-2");
       bookCard.innerHTML = `
@@ -124,23 +125,39 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p class="card-text"><strong>Year Of Publish:</strong> ${book.yearOfPublish}</p>
                 <p class="card-text"><strong>Author:</strong> ${book.author}</p>
                 <p class="card-text"><strong>Copies left:</strong> ${book.copies != null ? book.copies : 'N/A'}</p>
-                <button class="btn btn-primary w-100 rounded borrow-btn" ${book.copies === 0 ? 'disabled' : ''}>Borrow</button>
+                ${book.copies === 0 ? `<button class="btn btn-primary w-100 rounded reserve-btn">Reserve</button>` : `<button class="btn btn-primary w-100 rounded borrow-btn">Borrow</button>`}
               </div>
             </div>
           </div>
         </div>
       `;
       BooksContainer.appendChild(bookCard);
+      // Attach the index to the button inside this card so click handlers can find the corresponding book
+      const btn = bookCard.querySelector('.borrow-btn, .reserve-btn');
+      if (btn) btn.dataset.index = String(idx);
     });
     // Add event listeners for Borrow buttons: save selectedBook then navigate to borrow page
     const borrowButtons = document.querySelectorAll(".borrow-btn");
-    borrowButtons.forEach((button, index) => {
+    borrowButtons.forEach((button) => {
       button.addEventListener("click", (e) => {
         e.preventDefault();
-        const book = filteredBooks[start + index];
+        const idx = parseInt(button.dataset.index, 10);
+        const book = filteredBooks[idx];
         localStorage.setItem("selectedBook", JSON.stringify(book));
         // navigate to borrow page (relative to search folder)
         window.location.href = "../borrow/borrow.html";
+      });
+    });
+    // Add event listeners for Reserve buttons: save selectedBook then navigate to reserve page
+    const reserveButtons = document.querySelectorAll(".reserve-btn");
+    reserveButtons.forEach((button) => {
+      button.addEventListener("click", (e) => {
+        e.preventDefault();
+        const idx = parseInt(button.dataset.index, 10);
+        const book = filteredBooks[idx];
+        localStorage.setItem("selectedBook", JSON.stringify(book));
+        // navigate to reserve page (relative to search folder)
+        window.location.href = "../reserve/reserve.html";
       });
     });
   }
