@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   try {
-    const stored = localStorage.getItem('selectedBook');
-    const book = stored ? JSON.parse(stored) : null;
+  const stored = localStorage.getItem('selectedBook');
+  let book = stored ? JSON.parse(stored) : null;
     const coverImg = document.getElementById('coverImg');
     const titleField = document.getElementById('titleField');
     const isbnField = document.getElementById('isbnField');
@@ -20,6 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
       isbnField.textContent = book.isbn || '-';
       editionField.textContent = book.edition || '-';
       authorField.textContent = book.author || '-';
+      // show copies if available
+      const copiesField = document.getElementById('copiesField');
+      if (copiesField) {
+        copiesField.textContent = (book.copies != null) ? String(book.copies) : '-';
+      }
     } else {
       // no selected book
       coverImg.src = '../ULiblogo.png';
@@ -63,11 +68,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmBtn = document.getElementById('confirmBorrow');
 
     function updateConfirmButton() {
-      // Only enable when there is a selected book and dates are present & valid
+      // Only enable when there is a selected book, dates are valid, and copies are available
       const hasBook = !!book;
       const datesValid = validateDates();
+      const copiesAvailable = book && (book.copies == null || book.copies > 0);
       if (confirmBtn) {
-        confirmBtn.disabled = !(hasBook && datesValid);
+        const enabled = hasBook && datesValid && copiesAvailable;
+        confirmBtn.disabled = !enabled;
+        // adjust button text when disabled due to no copies (but don't overwrite a 'Confirmed' state)
+        if (!enabled) {
+          if (book && book.copies === 0) {
+            confirmBtn.textContent = 'Unavailable';
+          } else if (confirmBtn.textContent !== 'Confirmed') {
+            confirmBtn.textContent = 'Confirm Borrow';
+          }
+        } else {
+          if (confirmBtn.textContent !== 'Confirmed') {
+            confirmBtn.textContent = 'Confirm Borrow';
+          }
+        }
       }
     }
 
@@ -109,6 +128,30 @@ document.addEventListener('DOMContentLoaded', () => {
           localStorage.setItem('borrowRecords', JSON.stringify(existing));
         } catch (e) {
           console.error('Failed to save borrow record', e);
+        }
+        // decrement copies in the stored Books array and persist
+        try {
+          const storedBooks = JSON.parse(localStorage.getItem('Books') || '[]');
+          const idx = storedBooks.findIndex(b => (b.id && book.id && b.id === book.id) || (b.title === book.title && b.author === book.author));
+          if (idx !== -1) {
+            const updated = storedBooks[idx];
+            updated.copies = Math.max(0, (updated.copies || 0) - 1);
+            storedBooks[idx] = updated;
+            localStorage.setItem('Books', JSON.stringify(storedBooks));
+            // update displayed copies
+            const copiesField = document.getElementById('copiesField');
+            if (copiesField) copiesField.textContent = String(updated.copies);
+            // also update selectedBook stored in localStorage so borrow page reflects new count
+            book = Object.assign({}, book, { copies: updated.copies });
+            localStorage.setItem('selectedBook', JSON.stringify(book));
+            // if copies reached 0, disable confirm and show Unavailable
+            if (updated.copies === 0 && confirmBtn) {
+              confirmBtn.disabled = true;
+              confirmBtn.textContent = 'Unavailable';
+            }
+          }
+        } catch (e) {
+          console.error('Failed to update book copies', e);
         }
         // give feedback and disable the button to avoid duplicate clicks
         confirmBtn.disabled = true;

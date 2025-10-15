@@ -63,14 +63,40 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Generate 30 dummy books for demonstration
-  Books = Array.from({ length: 30 }, (_, i) => ({
-    title: `Book ${i + 1}`,
-    genre: ["Literature", "Sci-Fi", "Sports", "Novel", "Fantasy", "Computer", "Mystery"][i % 7],
-    yearOfPublish: 2000 + (i % 25),
-    author: `Author ${i + 1}`,
-    image: "../ULiblogo.png"
-  }));
+  // Load Books from localStorage if present, otherwise generate 30 dummy books and persist
+  const storedBooks = localStorage.getItem('Books');
+  if (storedBooks) {
+    try {
+      Books = JSON.parse(storedBooks);
+    } catch (e) {
+      console.error('Failed to parse stored Books, regenerating', e);
+      Books = null;
+    }
+  }
+  // Migrate old stored Books: ensure id and copies exist for each book
+  if (Books && Array.isArray(Books)) {
+    let migrated = false;
+    Books.forEach((b, idx) => {
+      if (b.id == null) { b.id = `b${idx + 1}`; migrated = true; }
+      if (b.copies == null) { b.copies = Math.floor(Math.random() * 5) + 1; migrated = true; }
+    });
+    if (migrated) {
+      try { localStorage.setItem('Books', JSON.stringify(Books)); } catch (e) { console.error('Failed to persist migrated Books', e); }
+    }
+  }
+  if (!Books || !Array.isArray(Books) || Books.length === 0) {
+    Books = Array.from({ length: 30 }, (_, i) => ({
+      id: `b${i + 1}`,
+      title: `Book ${i + 1}`,
+      genre: ["Literature", "Sci-Fi", "Sports", "Novel", "Fantasy", "Computer", "Mystery"][i % 7],
+      yearOfPublish: 2000 + (i % 25),
+      author: `Author ${i + 1}`,
+      image: "../ULiblogo.png",
+      copies: Math.floor(Math.random() * 5) + 1 // 1 to 5 copies
+    }));
+    // persist initial Books
+    localStorage.setItem('Books', JSON.stringify(Books));
+  }
 
   // Render a page of books (from filteredBooks)
   function showPage(page) {
@@ -97,7 +123,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p class="card-text"><strong>Genre:</strong> ${book.genre}</p>
                 <p class="card-text"><strong>Year Of Publish:</strong> ${book.yearOfPublish}</p>
                 <p class="card-text"><strong>Author:</strong> ${book.author}</p>
-                <button class="btn btn-primary w-100 rounded borrow-btn">Borrow</button>
+                <p class="card-text"><strong>Copies left:</strong> ${book.copies != null ? book.copies : 'N/A'}</p>
+                <button class="btn btn-primary w-100 rounded borrow-btn" ${book.copies === 0 ? 'disabled' : ''}>Borrow</button>
               </div>
             </div>
           </div>
@@ -307,8 +334,3 @@ document.addEventListener("DOMContentLoaded", () => {
   setupPagination(Books.length);
   showPage(1);
 });
-
-
-  // ...existing code...
-
-  // ...existing code...
