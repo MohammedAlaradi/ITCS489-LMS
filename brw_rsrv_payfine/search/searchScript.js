@@ -147,8 +147,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const idx = parseInt(button.dataset.index, 10);
         const book = filteredBooks[idx];
         localStorage.setItem("selectedBook", JSON.stringify(book));
-        // navigate to borrow page (relative to search folder)
-        window.location.href = "../borrow/borrow.html";
+  // navigate to borrow page (relative to search folder)
+  window.location.href = "../borrowPage/borrow.html";
       });
     });
     // Add event listeners for Reserve buttons: save selectedBook then navigate to reserve page

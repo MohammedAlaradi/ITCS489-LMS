@@ -9,7 +9,7 @@
   
     <!-- Bootstrap script for event handling -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-    <script defer src="borrowScript.js"></script>
+    <script defer src="borrowedBooksScript.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
@@ -19,9 +19,9 @@
     <!-- Top Navbar with Logo and Sidebar Button -->
 <header class="p-3 navbar navbar-expand-md navbar-dark bg-dark">
     <div class="container-fluid d-flex align-items-center">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
+            <a class="navbar-brand d-flex align-items-center" href="../search/index.html">
             <img src="../ULiblogo.png" alt="Logo" width="60" height="48">
-            <span class="ms-2">Borrow a Book</span>
+            <span class="ms-2">Borrowed Books</span>
         </a>
     </div>
 </header>
@@ -36,9 +36,9 @@
         <nav class="nav flex-column">
             <a class="nav-link btn-primary" href="../search/index.html">Home</a>
             <hr>
-            <a class="nav-link btn-primary active" href="borrow.html">Borrow a Book</a>
+            <a class="nav-link btn-primary active" href="borrowedBooks.html">Borrowed Books</a>
             <hr>
-            <a class="nav-link btn-primary" href="">Fine</a>
+            <a class="nav-link btn-primary" href="../fine/fine.html">Fine</a>
             <hr>
             <a class="nav-link btn-primary" href="">Add a New Book</a>
             <hr>
@@ -53,7 +53,6 @@
     </div>
 </div>
 <main class="container mt-4"> 
-    <!-- Search, Filter, and Sort Section -->
     <section class="mb-4">
         <div class="d-flex justify-content-start align-items-center w-100" style="flex-wrap: nowrap;">
             <!-- Sidebar Toggle Button (keep navigation) -->
@@ -68,72 +67,12 @@
         </div>
     </section>
 
-    <section class="mb-3 borrow-detail">
-      <div class="container-fluid">
-        <h3 class="mt-2">Book Information:</h3>
-        <div class="row mt-3 g-3 align-items-stretch">
-          <div class="col-md-4">
-            <div class="card h-100">
-              <div class="card-body d-flex align-items-center justify-content-center">
-                <img id="coverImg" src="../ULiblogo.png" alt="Book Cover" class="img-fluid" style="max-height:300px; object-fit:contain; width:100%;">
-              </div>
+        <section class="container mt-3">
+            <h3 class="mb-3">Your Borrowed Books</h3>
+            <div id="borrowedCardsRow" class="row g-3">
+                <!-- Borrowed book cards will be injected here by borrowedBooksScript.js -->
             </div>
-          </div>
-          <div class="col-md-8">
-            <div class="card h-100">
-              <div class="card-body d-flex flex-column justify-content-start">
-                <div class="mb-3">
-                  <label class="form-label"><strong>Title</strong></label>
-                  <p id="titleField" class="form-control-plaintext">-</p>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label"><strong>ISBN</strong></label>
-                  <p id="isbnField" class="form-control-plaintext">-</p>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label"><strong>Edition</strong></label>
-                  <p id="editionField" class="form-control-plaintext">-</p>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label"><strong>Author</strong></label>
-                  <p id="authorField" class="form-control-plaintext">-</p>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label"><strong>Copies left</strong></label>
-                  <p id="copiesField" class="form-control-plaintext">-</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="mb-3">
-      <div class="container-fluid">
-        <h5 class="mb-3"><strong>Borrowing Period:</strong></h5>
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label for="fromDate" class="form-label">From</label>
-            <input type="date" id="fromDate" class="form-control">
-          </div>
-          <div class="col-md-6">
-            <label for="toDate" class="form-label">To</label>
-            <input type="date" id="toDate" class="form-control">
-          </div>
-        </div>
-        <div class="row mt-3">
-          <div class="col-6">
-            <button id="cancelBorrow" type="button" class="btn btn-outline-secondary w-100">Cancel</button>
-          </div>
-          <div class="col-6">
-            <button id="confirmBorrow" type="button" class="btn btn-primary w-100" disabled>Confirm Borrow</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  
+        </section>
 
     <footer class="text-center py-3 mt-5">
       &copy; 2025 ULib. All rights reserved.
