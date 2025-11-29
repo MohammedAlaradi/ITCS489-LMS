@@ -9,7 +9,7 @@
   
     <!-- Bootstrap script for event handling -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-    <script defer src="javaScript.js"></script>
+    <script defer src="fineupdate.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
@@ -285,9 +285,12 @@
       </section>
 
       <!-- Current Fines Section -->
-      <section class="mb-5">
-        <h3>Current Fines</h3>
-        <div class="row">
+  <section class="mb-5">
+  <h3>Current Fines</h3>
+  <div class="row" id="currentFinesContainer">
+    <!-- الكروت (John, Sarah, Michael) تبقى نفسها داخل هذا الـ div -->
+
+
           <!-- Fine Card 1 -->
           <div class="col-md-6 col-lg-4 mb-3">
             <div class="card fine-card h-100">
@@ -380,7 +383,7 @@
                 <th>Notes</th>
               </tr>
             </thead>
-            <tbody>
+          <tbody id="historyTableBody">
               <tr>
                 <td>2025-03-14</td>
                 <td>M001</td>
@@ -450,133 +453,5 @@
       &copy; 2025 ULib. All rights reserved.
     </footer>
 
-    <script>
-      // Mock database for member and book information
-      const members = {
-        'M001': { name: 'John Smith', email: 'john.smith@email.com', phone: '(555) 123-4567' },
-        'M002': { name: 'Sarah Johnson', email: 'sarah.j@email.com', phone: '(555) 234-5678' },
-        'M003': { name: 'Michael Brown', email: 'm.brown@email.com', phone: '(555) 345-6789' },
-        'M004': { name: 'Emily Davis', email: 'emily.davis@email.com', phone: '(555) 456-7890' }
-      };
-
-      const books = {
-        'B001': { title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', isbn: '978-0-7432-7356-5' },
-        'B002': { title: 'To Kill a Mockingbird', author: 'Harper Lee', isbn: '978-0-06-112008-4' },
-        'B003': { title: '1984', author: 'George Orwell', isbn: '978-0-452-28423-4' },
-        'B004': { title: 'Pride and Prejudice', author: 'Jane Austen', isbn: '978-0-14-143951-8' }
-      };
-
-      // Member ID input functionality
-      document.getElementById('memberIdInput').addEventListener('blur', function() {
-        const memberId = this.value.toUpperCase();
-        const memberInfo = document.getElementById('memberInfo');
-        const memberName = document.getElementById('memberName');
-        const memberEmail = document.getElementById('memberEmail');
-        const memberPhone = document.getElementById('memberPhone');
-
-        if (members[memberId]) {
-          memberName.textContent = members[memberId].name;
-          memberEmail.textContent = members[memberId].email;
-          memberPhone.textContent = members[memberId].phone;
-          memberInfo.style.display = 'block';
-        } else if (memberId) {
-          memberName.textContent = 'Not Found';
-          memberEmail.textContent = '-';
-          memberPhone.textContent = '-';
-          memberInfo.style.display = 'block';
-        } else {
-          memberInfo.style.display = 'none';
-        }
-      });
-
-      // Book ID input functionality
-      document.getElementById('bookIdInput').addEventListener('blur', function() {
-        const bookId = this.value.toUpperCase();
-        const bookInfo = document.getElementById('bookInfo');
-        const bookTitle = document.getElementById('bookTitle');
-        const bookAuthor = document.getElementById('bookAuthor');
-        const bookISBN = document.getElementById('bookISBN');
-
-        if (books[bookId]) {
-          bookTitle.textContent = books[bookId].title;
-          bookAuthor.textContent = books[bookId].author;
-          bookISBN.textContent = books[bookId].isbn;
-          bookInfo.style.display = 'block';
-        } else if (bookId) {
-          bookTitle.textContent = 'Not Found';
-          bookAuthor.textContent = '-';
-          bookISBN.textContent = '-';
-          bookInfo.style.display = 'block';
-        } else {
-          bookInfo.style.display = 'none';
-        }
-      });
-
-      // Simple form handling for demonstration
-      document.getElementById('updateFineForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Get form values
-        const memberId = document.getElementById('memberIdInput').value;
-        const bookId = document.getElementById('bookIdInput').value;
-        const amount = document.getElementById('fineAmount').value;
-        const status = document.getElementById('fineStatus').value;
-        const reason = document.getElementById('fineReason').value;
-        
-        // Validate member and book IDs
-        if (!members[memberId.toUpperCase()]) {
-          alert('Invalid Member ID. Please enter a valid Member ID.');
-          return;
-        }
-        
-        if (!books[bookId.toUpperCase()]) {
-          alert('Invalid Book ID. Please enter a valid Book ID.');
-          return;
-        }
-        
-        // In a real application, you would send this data to a server
-        alert(`Fine updated successfully!\nMember ID: ${memberId}\nBook ID: ${bookId}\nAmount: $${amount}\nStatus: ${status}\nReason: ${reason}`);
-        
-        // Reset form
-        this.reset();
-        document.getElementById('memberInfo').style.display = 'none';
-        document.getElementById('bookInfo').style.display = 'none';
-      });
-
-      // Reset form functionality
-      document.getElementById('resetForm').addEventListener('click', function() {
-        document.getElementById('memberInfo').style.display = 'none';
-        document.getElementById('bookInfo').style.display = 'none';
-      });
-      
-      // Filter and sort functionality
-      document.querySelectorAll('#statusFilter .dropdown-item').forEach(item => {
-        item.addEventListener('click', function() {
-          if(this.getAttribute('value') !== undefined) {
-            alert(`Filtering by: ${this.textContent}`);
-          }
-        });
-      });
-      
-      document.querySelectorAll('#sortDate .dropdown-item').forEach(item => {
-        item.addEventListener('click', function() {
-          if(this.getAttribute('value') !== undefined) {
-            alert(`Sorting by: ${this.textContent}`);
-          }
-        });
-      });
-      
-      // History search functionality
-      document.querySelector('#historySearch').addEventListener('keyup', function(e) {
-        if(e.key === 'Enter') {
-          alert(`Searching history for: ${this.value}`);
-        }
-      });
-      
-      document.querySelector('#historySearch + .btn').addEventListener('click', function() {
-        const searchTerm = document.querySelector('#historySearch').value;
-        alert(`Searching history for: ${searchTerm}`);
-      });
-    </script>
   </body>
 </html>
