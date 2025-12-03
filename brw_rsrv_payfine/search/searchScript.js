@@ -1,28 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const itemsPerPage = 16; // Number of Books per page
+  const itemsPerPage = 16;
   let Books = [];
   let filteredBooks = [];
   const paginationContainer = document.querySelector(".pagination");
-
-  // Search input
   const searchInput = document.getElementById("searchInput");
-  // Year input validation: only accept 4-digit years between 1900 and current year
+
+  // Input validations remain the same
   const yearInput = document.getElementById("yearOfPublish");
   const currentYear = new Date().getFullYear();
   if (yearInput) {
-    // ensure HTML min/max align with current year
     yearInput.setAttribute('min', '1900');
     yearInput.setAttribute('max', String(currentYear));
-    // allow numeric keypad on mobile
     yearInput.setAttribute('inputmode', 'numeric');
-
-    // sanitize input to digits only and max length 4
     yearInput.addEventListener('input', () => {
       const cleaned = yearInput.value.replace(/\D/g, '').slice(0, 4);
       if (cleaned !== yearInput.value) yearInput.value = cleaned;
     });
-
-    // validate on blur and show message if invalid
     yearInput.addEventListener('blur', () => {
       if (!yearInput.value) {
         yearInput.setCustomValidity('');
@@ -38,17 +31,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ISBN input validation: only accept 13-digit numbers
   const isbnInput = document.getElementById("bookISBN");
   if (isbnInput) {
-    // use inputmode numeric for mobile and keep value as string
     isbnInput.setAttribute('inputmode', 'numeric');
-    // sanitize to digits and limit to 13 chars
     isbnInput.addEventListener('input', () => {
       const cleaned = isbnInput.value.replace(/\D/g, '').slice(0, 13);
       if (cleaned !== isbnInput.value) isbnInput.value = cleaned;
     });
-    // validate on blur
     isbnInput.addEventListener('blur', () => {
       if (!isbnInput.value) {
         isbnInput.setCustomValidity('');
@@ -63,57 +52,84 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Load Books from localStorage if present, otherwise generate 30 dummy books and persist
-  const storedBooks = localStorage.getItem('Books');
-  if (storedBooks) {
-    try {
-      Books = JSON.parse(storedBooks);
-    } catch (e) {
-      console.error('Failed to parse stored Books, regenerating', e);
-      Books = null;
-    }
-  }
-  // Migrate old stored Books: ensure id and copies exist for each book
-  if (Books && Array.isArray(Books)) {
-    let migrated = false;
-    Books.forEach((b, idx) => {
-      if (b.id == null) { b.id = `b${idx + 1}`; migrated = true; }
-      if (b.copies == null) { b.copies = Math.floor(Math.random() * 5) + 1; migrated = true; }
-      if (b.isbn == null) { b.isbn = String(9780000000000 + idx).slice(0,13); migrated = true; }
-      if (b.edition == null) { b.edition = 1 + (idx % 3); migrated = true; }
-    });
-    if (migrated) {
-      try { localStorage.setItem('Books', JSON.stringify(Books)); } catch (e) { console.error('Failed to persist migrated Books', e); }
-    }
-  }
-  if (!Books || !Array.isArray(Books) || Books.length === 0) {
-    Books = Array.from({ length: 30 }, (_, i) => ({
-      id: `b${i + 1}`,
-      title: `Book ${i + 1}`,
-      genre: ["Literature", "Sci-Fi", "Sports", "Novel", "Fantasy", "Computer", "Mystery"][i % 7],
-      yearOfPublish: 2000 + (i % 25),
-      author: `Author ${i + 1}`,
-      image: "../ULiblogo.png",
-      copies: Math.floor(Math.random() * 5) + 1, // 1 to 5 copies
-      isbn: String(9780000000000 + i).slice(0,13),
-      edition: 1 + (i % 3)
-    }));
-    // persist initial Books
-    localStorage.setItem('Books', JSON.stringify(Books));
+  // Remove the server-side rendering reading logic
+  const serverCards = document.querySelectorAll("section > .row > .col-md-6[data-title]");
+  if (serverCards && serverCards.length) {
+    // If you want to keep initial server render as fallback, uncomment:
+    // Books = Array.from(serverCards).map(card => { ... });
+    // But we'll fetch fresh from DB
   }
 
-  // Render a page of books (from filteredBooks)
+  // NEW: Function to fetch books from database
+  async function fetchBooksFromDB() {
+    try {
+      // Use relative path to API folder (go up one level, then to API)
+      const response = await fetch('../API/getBooks.php');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const booksData = await response.json();
+      
+      // Transform data to match expected structure
+      Books = booksData.map(book => ({
+        isbn: book.ISBN || book.isbn || '', // Use ISBN as unique identifier
+        title: book.Title || book.title || 'Untitled',
+        genre: book.Genre || book.genre || '',
+        yearOfPublish: book.YearofPublish || book.yearOfPublish || null,
+        author: book.Author || book.author || '',
+        image: book.image || '../ULiblogo.png',
+        copies: parseInt(book.Copies || book.copies || 0),
+        // If you have other fields, add them here
+      }));
+      
+      // Hide loading spinner
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      const loadingText = document.getElementById('loadingText');
+      if (loadingSpinner) loadingSpinner.style.display = 'none';
+      if (loadingText) loadingText.style.display = 'none';
+      
+      // Initialize filteredBooks and render
+      filteredBooks = Books.slice();
+      setupPagination(filteredBooks.length);
+      showPage(1);
+    } catch (error) {
+      console.error('Error fetching books:', error);
+      
+      // Hide loading spinner and show error
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      const loadingText = document.getElementById('loadingText');
+      if (loadingSpinner) loadingSpinner.style.display = 'none';
+      if (loadingText) {
+        loadingText.textContent = 'Error loading books. Please try again.';
+        loadingText.className = 'text-danger';
+      }
+      
+      Books = [];
+      filteredBooks = [];
+      setupPagination(0);
+      showPage(1);
+    }
+  }
+
+  // Render a page of books
   function showPage(page) {
     const start = (page - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     const BooksContainer = document.querySelector("section > .row");
     BooksContainer.innerHTML = "";
-    // Reduce vertical and horizontal spacing by using mb-2 and Bootstrap's g-1 for the row
+
     const BooksRow = BooksContainer;
     BooksRow.classList.remove("mb-4", "g-3", "g-2");
     BooksRow.classList.add("g-1");
+    
+    // If no books, show message
+    if (filteredBooks.length === 0) {
+      BooksContainer.innerHTML = '<p class="text-muted text-center w-100">No books found.</p>';
+      return;
+    }
+    
     filteredBooks.slice(start, end).forEach((book, i) => {
-      const idx = start + i; // absolute index into filteredBooks for this page
+      const idx = start + i;
       const bookCard = document.createElement("div");
       bookCard.classList.add("col-md-6", "mb-2");
       bookCard.innerHTML = `
@@ -128,45 +144,70 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p class="card-text"><strong>Genre:</strong> ${book.genre}</p>
                 <p class="card-text"><strong>Year Of Publish:</strong> ${book.yearOfPublish}</p>
                 <p class="card-text"><strong>Author:</strong> ${book.author}</p>
-                ${book.copies === 0 ? `<button class="btn btn-primary w-100 rounded reserve-btn">Reserve</button>` : `<button class="btn btn-primary w-100 rounded borrow-btn">Borrow</button>`}
+                ${book.copies === 0 ? 
+                  `<button class="btn btn-primary w-100 rounded reserve-btn" data-book-isbn="${book.isbn}">Reserve</button>` : 
+                  `<button class="btn btn-primary w-100 rounded borrow-btn" data-book-isbn="${book.isbn}">Borrow</button>`}
               </div>
             </div>
           </div>
         </div>
       `;
       BooksContainer.appendChild(bookCard);
-      // Attach the index to the button inside this card so click handlers can find the corresponding book
-      const btn = bookCard.querySelector('.borrow-btn, .reserve-btn');
-      if (btn) btn.dataset.index = String(idx);
     });
-    // Add event listeners for Borrow buttons: save selectedBook then navigate to borrow page
+    
+    // Attach event listeners for buttons
+    attachButtonListeners();
+  }
+
+  // NEW: Attach event listeners to borrow/reserve buttons
+  function attachButtonListeners() {
+    // Borrow buttons
     const borrowButtons = document.querySelectorAll(".borrow-btn");
     borrowButtons.forEach((button) => {
-      button.addEventListener("click", (e) => {
+      button.addEventListener("click", async (e) => {
         e.preventDefault();
-        const idx = parseInt(button.dataset.index, 10);
-        const book = filteredBooks[idx];
-        localStorage.setItem("selectedBook", JSON.stringify(book));
-  // navigate to borrow page (relative to search folder)
-  window.location.href = "../borrowPage/borrow.html";
+        const bookISBN = button.dataset.bookIsbn;
+        if (!bookISBN) return;
+        
+        try {
+          // Fetch book details from database using ISBN
+          const response = await fetch(`../API/getBook.php?isbn=${bookISBN}`);
+          if (!response.ok) throw new Error('Failed to fetch book');
+          const book = await response.json();
+          
+          // Navigate with book ISBN as query parameter instead of localStorage
+          window.location.href = `../borrowPage/borrow.php?bookISBN=${bookISBN}&title=${encodeURIComponent(book.Title)}&author=${encodeURIComponent(book.Author)}`;
+        } catch (error) {
+          console.error('Error fetching book details:', error);
+          // Fallback: navigate with just ISBN
+          window.location.href = `../borrowPage/borrow.php?bookISBN=${bookISBN}`;
+        }
       });
     });
-    // Add event listeners for Reserve buttons: save selectedBook then navigate to reserve page
+    
+    // Reserve buttons
     const reserveButtons = document.querySelectorAll(".reserve-btn");
     reserveButtons.forEach((button) => {
-      button.addEventListener("click", (e) => {
+      button.addEventListener("click", async (e) => {
         e.preventDefault();
-        const idx = parseInt(button.dataset.index, 10);
-        const book = filteredBooks[idx];
-        localStorage.setItem("selectedBook", JSON.stringify(book));
-        // navigate to reserve page (relative to search folder)
-        window.location.href = "../reserve/reserve.html";
+        const bookISBN = button.dataset.bookIsbn;
+        if (!bookISBN) return;
+        
+        try {
+          const response = await fetch(`../API/getBook.php?isbn=${bookISBN}`);
+          if (!response.ok) throw new Error('Failed to fetch book');
+          const book = await response.json();
+          
+          window.location.href = `../reserve/reserve.php?bookISBN=${bookISBN}&title=${encodeURIComponent(book.Title)}&author=${encodeURIComponent(book.Author)}`;
+        } catch (error) {
+          console.error('Error fetching book details:', error);
+          window.location.href = `../reserve/reserve.php?bookISBN=${bookISBN}`;
+        }
       });
     });
   }
 
-  // Keep track of current sort order so sorting persists across filters
-  let sortOrder = null; // 'asc' or 'desc'
+  let sortOrder = null;
 
   function applySort() {
     if (!sortOrder) return;
@@ -177,7 +218,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Setup pagination controls (for filteredBooks)
   function setupPagination(totalItems) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     paginationContainer.innerHTML = "";
@@ -201,12 +241,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-
   // Advanced filter logic
   function filterBooks() {
     const search = searchInput.value.trim().toLowerCase();
     const isbn = document.getElementById("bookISBN").value.trim();
-    // If ISBN present but not 13 digits, show validation message and abort
     if (isbn && isbnInput && isbnInput.value.length !== 13) {
       isbnInput.setCustomValidity('Please enter a 13-digit ISBN.');
       isbnInput.reportValidity();
@@ -215,7 +253,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const year = document.getElementById("yearOfPublish").value.trim();
     const author = document.getElementById("AuthorName").value.trim().toLowerCase();
 
-    // Genre filter: get selected genre from dropdown (by click)
     let genre = "";
     const genreFilter = document.getElementById("genreFilter");
     if (genreFilter && genreFilter.dataset.selected) {
@@ -223,32 +260,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     filteredBooks = Books.filter(book => {
-      // Search bar: match title or author
       if (search && !(book.title.toLowerCase().includes(search) || book.author.toLowerCase().includes(search))) {
         return false;
       }
-      // ISBN (if present in book)
       if (isbn && book.isbn && String(book.isbn) !== isbn) {
         return false;
       }
-      // Genre
       if (genre && genre !== "Others") {
         if (book.genre !== genre) return false;
       } else if (genre === "Others") {
         const mainGenres = ["Literature", "Sci-Fi", "Sports", "Novel", "Fantasy", "Computer", "Mystery"];
         if (mainGenres.includes(book.genre)) return false;
       }
-      // Year
       if (year && String(book.yearOfPublish) !== year) {
         return false;
       }
-      // Author (advanced filter)
       if (author && !book.author.toLowerCase().includes(author)) {
         return false;
       }
       return true;
     });
-    // apply current sort (if any) so filtered results respect user choice
+    
     applySort();
     setupPagination(filteredBooks.length);
     showPage(1);
@@ -259,38 +291,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetFilterBtn = document.getElementById("resetFilter");
 
   applyFilterBtn.addEventListener("click", filterBooks);
-
   resetFilterBtn.addEventListener("click", () => {
     document.getElementById("bookISBN").value = "";
     document.getElementById("yearOfPublish").value = "";
     document.getElementById("AuthorName").value = "";
-    // Reset genre selection
     const genreFilter = document.getElementById("genreFilter");
     if (genreFilter) {
       delete genreFilter.dataset.selected;
-      // Optionally, visually reset selection
       genreFilter.querySelectorAll(".dropdown-item").forEach(item => item.classList.remove("active"));
     }
     filterBooks();
   });
 
-  // Initialize
-  filteredBooks = Books.slice();
-  setupPagination(filteredBooks.length);
-  showPage(1);
+  // NEW: Fetch books from database on page load
+  fetchBooksFromDB();
 
   // Listen for search input
   searchInput.addEventListener("input", filterBooks);
 
-  // Listen for genre filter selection (dropdown click)
+  // Genre filter
   const genreFilter = document.getElementById("genreFilter");
   if (genreFilter) {
     genreFilter.querySelectorAll(".dropdown-item").forEach(item => {
       item.addEventListener("click", function(e) {
         e.preventDefault();
-        // Store selected genre in dataset
         genreFilter.dataset.selected = this.getAttribute("value") || this.textContent.trim();
-        // Visually mark selected
         genreFilter.querySelectorAll(".dropdown-item").forEach(i => i.classList.remove("active"));
         this.classList.add("active");
         filterBooks();
@@ -298,7 +323,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Genre reset button (in dropdown)
   const genreResetBtn = document.getElementById("genreReset");
   if (genreResetBtn) {
     genreResetBtn.addEventListener("click", (e) => {
@@ -311,17 +335,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Sorting logic for filteredBooks (uses current filteredBooks array)
+  // Sorting logic
   const sortDropdown = document.getElementById("sortDate");
   if (sortDropdown) {
     sortDropdown.querySelectorAll(".dropdown-item").forEach(item => {
       item.addEventListener("click", function(e) {
         e.preventDefault();
-        // Visually mark selected
         sortDropdown.querySelectorAll(".dropdown-item").forEach(i => i.classList.remove("active"));
         this.classList.add("active");
         const value = this.getAttribute("value");
-        // Map dropdown values to behavior: 'a' -> Newest to Oldest (desc), 'd' -> Oldest to Newest (asc)
         if (value === "a") {
           sortOrder = 'desc';
         } else if (value === "d") {
@@ -329,7 +351,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           sortOrder = null;
         }
-        // Apply sort and refresh
         applySort();
         setupPagination(filteredBooks.length);
         showPage(1);
@@ -337,20 +358,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Sort reset button
   const sortResetBtn = document.getElementById("sortReset");
   if (sortResetBtn) {
     sortResetBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      // Clear visual selection
       sortDropdown.querySelectorAll(".dropdown-item").forEach(i => i.classList.remove("active"));
       sortOrder = null;
-      // Reapply filter (which will not sort) and refresh
       filterBooks();
     });
   }
-
-  // Initialize
-  setupPagination(Books.length);
-  showPage(1);
 });
