@@ -16,16 +16,19 @@ try {
   $stmt->setFetchMode(PDO::FETCH_ASSOC);
   $rows = $stmt->fetchAll();
 
-  foreach ($rows as $row) {
-    echo "ISBN: " . $row['ISBN'] . ", Title: " . $row['Title'] . ", Author: " . $row['Author'] . " - Edition: ".$row['Edition'].
-          " - Publisher: ". $row['Publisher'] . " - Year of Publish: ". $row['YearofPublish']. " - Genre: ".$row['Genre']." - Copies: ".$row['Copies']."\n";
-  }
+  // foreach ($rows as $row) {
+  //   echo "ISBN: " . $row['ISBN'] . ", Title: " . $row['Title'] . ", Author: " . $row['Author'] . " - Edition: ".$row['Edition'].
+  //         " - Publisher: ". $row['Publisher'] . " - Year of Publish: ". $row['YearofPublish']. " - Genre: ".$row['Genre']." - Copies: ".$row['Copies']."\n";
+  // }
+  $bookList = $rows;
 
-  echo json_encode($out, JSON_UNESCAPED_UNICODE);
+  echo json_encode($bookList, JSON_UNESCAPED_UNICODE);
 
 } catch (PDOException $e) {
   http_response_code(500);
   echo json_encode(['error' => 'Connection failed', 'message' => $e->getMessage()]);
 }
+
+
 
 ?>
