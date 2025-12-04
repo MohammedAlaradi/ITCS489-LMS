@@ -34,11 +34,11 @@
     </div>
     <div class="offcanvas-body">
         <nav class="nav flex-column">
-            <a class="nav-link btn-primary" href="../search/index.html">Home</a>
+            <a class="nav-link btn-primary" href="../search/index.php">Home</a>
             <hr>
-            <a class="nav-link btn-primary active" href="../borrowedBooks/borrowedBooks.html">Borrow a Book</a>
+            <a class="nav-link btn-primary active" href="../borrowPage/borrow.php">Borrow a Book</a>
             <hr>
-            <a class="nav-link btn-primary" href="../fine/fine.html">Fine</a>
+            <a class="nav-link btn-primary" href="../fine/fine.php">Fine</a>
             <hr>
             <a class="nav-link btn-primary" href="">Add a New Book</a>
             <hr>
@@ -52,7 +52,7 @@
         </nav>
     </div>
 </div>
-<main class="container mt-4"> 
+<main class="container mt-4">
     <!-- Search, Filter, and Sort Section -->
     <section class="mb-4">
         <div class="d-flex justify-content-start align-items-center w-100" style="flex-wrap: nowrap;">
@@ -133,7 +133,7 @@
       </div>
     </section>
 
-  
+
 
     <footer class="text-center py-3 mt-5">
       &copy; 2025 ULib. All rights reserved.

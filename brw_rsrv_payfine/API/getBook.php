@@ -12,18 +12,18 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     // Get book ID from query parameter
-    $bookId = $_GET['id'] ?? null;
+    $bookISBN = $_GET['ISBN'] ?? null;
     
-    if (!$bookId) {
+    if (!$bookISBN) {
         http_response_code(400);
-        echo json_encode(['error' => 'Book ID is required']);
+        echo json_encode(['error' => 'Book ISBN is required']);
         exit;
     }
     
     // Fetch specific book - adjust column names based on your database
-    $sql = "SELECT * FROM book WHERE id = :id OR bookID = :id";
+    $sql = "SELECT * FROM book WHERE ISBN = :ISBN";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id' => $bookId]);
+    $stmt->execute([':ISBN' => $bookISBN]);
     $book = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if ($book) {
