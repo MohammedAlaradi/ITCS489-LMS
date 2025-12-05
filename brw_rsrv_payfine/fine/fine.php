@@ -19,7 +19,7 @@
     <!-- Top Navbar with Logo and Sidebar Button -->
 <header class="p-3 navbar navbar-expand-md navbar-dark bg-dark">
     <div class="container-fluid d-flex align-items-center">
-            <a class="navbar-brand d-flex align-items-center" href="../search/index.html">
+            <a class="navbar-brand d-flex align-items-center" href="../search/index.php">
             <img src="../ULiblogo.png" alt="Logo" width="60" height="48">
             <span class="ms-2">Pay Fine</span>
         </a>
@@ -34,11 +34,11 @@
     </div>
     <div class="offcanvas-body">
         <nav class="nav flex-column">
-            <a class="nav-link btn-primary" href="../search/index.html">Home</a>
+            <a class="nav-link btn-primary" href="../search/index.php">Home</a>
             <hr>
-            <a class="nav-link btn-primary active" href="../borrowedBooks/borrowedBooks.html">Borrowed Books</a>
+            <a class="nav-link btn-primary active" href="../borrowedBooks/borrowedBooks.php">Borrowed Books</a>
             <hr>
-            <a class="nav-link btn-primary" href="fine.html">Fine</a>
+            <a class="nav-link btn-primary" href="fine.php">Fine</a>
             <hr>
             <a class="nav-link btn-primary" href="">Add a New Book</a>
             <hr>

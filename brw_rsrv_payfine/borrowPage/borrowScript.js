@@ -132,9 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (toInput) {
       toInput.setAttribute('min', todayStr);
-      // Set default return date to 14 days from now
+      // Set default return date to 7 days from now
       const defaultReturn = new Date();
-      defaultReturn.setDate(defaultReturn.getDate() + 14);
+      defaultReturn.setDate(defaultReturn.getDate() + 7);
       const returnYyyy = defaultReturn.getFullYear();
       const returnMm = String(defaultReturn.getMonth() + 1).padStart(2, '0');
       const returnDd = String(defaultReturn.getDate()).padStart(2, '0');
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
           alert('Book data not loaded yet. Please wait.');
           return;
         }
-        
+
         if (!validateDates()) {
           updateConfirmButton();
           return;
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Get dates
         const fromDate = fromInput.value;
         const toDate = toInput.value;
-        
+
         // Confirm with user
         if (!confirm(`Confirm borrowing "${book.title}"?\n\nBorrow Date: ${fromDate}\nReturn Date: ${toDate}`)) {
           return;
@@ -226,16 +226,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
           // Send borrow request to API
-          const response = await fetch('../API/borrowBook.php', {
+          const response = await fetch('../API/borrowRequest.php', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               bookISBN: book.isbn,
-              borrowDate: fromDate,
-              returnDate: toDate
-              // User info will be handled by session on the server side
+              borrow_date: fromDate,
+              return_date: toDate
             })
           });
 
@@ -265,18 +264,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
               }
             }
-            
+
             // Show success message
             alert(`Book "${book.title}" successfully borrowed!\n\nPlease return by: ${toDate}`);
-            
+
             // Optionally redirect after success
             setTimeout(() => {
               window.location.href = '../borrowedBooks/borrowedBooks.php';
             }, 2000);
-            
+
           } else {
             // Show error message
-            alert(`Failed to borrow book: ${result.message || 'Unknown error'}`);
+            alert(`Failed to borrow book: ${result.message}`);
           }
         } catch (error) {
           console.error('Error borrowing book:', error);

@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"  integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
   
-  <!-- Bootstrap script for event handling -->
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-  <script defer src="reserveSctipt.js"></script>
+    <!-- Bootstrap script for event handling -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script defer src="reserveScript.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
@@ -19,7 +19,7 @@
     <!-- Top Navbar with Logo and Sidebar Button -->
 <header class="p-3 navbar navbar-expand-md navbar-dark bg-dark">
     <div class="container-fluid d-flex align-items-center">
-            <a class="navbar-brand d-flex align-items-center" href="../search/index.html">
+            <a class="navbar-brand d-flex align-items-center" href="../search/index.php">
             <img src="../ULiblogo.png" alt="Logo" width="60" height="48">
             <span class="ms-2">Reserve a Book</span>
         </a>
@@ -34,11 +34,11 @@
     </div>
     <div class="offcanvas-body">
         <nav class="nav flex-column">
-            <a class="nav-link btn-primary" href="../search/index.html">Home</a>
+            <a class="nav-link btn-primary" href="../search/index.php">Home</a>
             <hr>
-            <a class="nav-link btn-primary active" href="../borrowedBooks/borrowedBooks.html">Borrowed Books</a>
+            <a class="nav-link btn-primary active" href="../reserve/reserve.php">Reserve a Book</a>
             <hr>
-            <a class="nav-link btn-primary" href="../fine/fine.html">Fine</a>
+            <a class="nav-link btn-primary" href="../fine/fine.php">Fine</a>
             <hr>
             <a class="nav-link btn-primary" href="">Add a New Book</a>
             <hr>
@@ -52,12 +52,12 @@
         </nav>
     </div>
 </div>
-<main class="container mt-4"> 
+<main class="container mt-4">
     <!-- Search, Filter, and Sort Section -->
     <section class="mb-4">
         <div class="d-flex justify-content-start align-items-center w-100" style="flex-wrap: nowrap;">
             <!-- Sidebar Toggle Button (keep navigation) -->
-            <button class="btn me-2 d-flex align-items-center justify-content-center menu" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav" aria-controls="siedebarNav" style="width: 40px; height: 40px;  border: none;">
+            <button class="btn me-2 d-flex align-items-center justify-content-center menu" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav" aria-controls="sidebarNav" style="width: 40px; height: 40px;  border: none;">
                 <!-- Custom SVG menu icon -->
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect y="4" width="24" height="2.5" rx="1.25" fill="#fff"/>
@@ -111,7 +111,7 @@
 
     <section class="mb-3">
       <div class="container-fluid">
-        <h5 class="mb-3"><strong>Reserving Period:</strong></h5>
+        <h5 class="mb-3"><strong>Reservation Period:</strong></h5>
         <div class="row g-3">
           <div class="col-md-6">
             <label for="fromDate" class="form-label">From</label>
@@ -127,15 +127,15 @@
             <button id="cancelReserve" type="button" class="btn btn-outline-secondary w-100">Cancel</button>
           </div>
           <div class="col-6">
-            <button id="confirmBorrow" type="button" class="btn btn-primary w-100" disabled>Confirm Reservation</button>
+            <button id="confirmReserve" type="button" class="btn btn-primary w-100" disabled>Confirm Reservation</button>
           </div>
         </div>
       </div>
     </section>
 
-  
-
     <footer class="text-center py-3 mt-5">
       &copy; 2025 ULib. All rights reserved.
     </footer>
   </main>
+</body>
+</html>

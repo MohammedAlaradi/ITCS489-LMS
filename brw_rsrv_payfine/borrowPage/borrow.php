@@ -19,7 +19,7 @@
     <!-- Top Navbar with Logo and Sidebar Button -->
 <header class="p-3 navbar navbar-expand-md navbar-dark bg-dark">
     <div class="container-fluid d-flex align-items-center">
-            <a class="navbar-brand d-flex align-items-center" href="../search/index.html">
+            <a class="navbar-brand d-flex align-items-center" href="../search/index.php">
             <img src="../ULiblogo.png" alt="Logo" width="60" height="48">
             <span class="ms-2">Borrow a Book</span>
         </a>
