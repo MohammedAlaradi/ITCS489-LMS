@@ -42,17 +42,15 @@ document.addEventListener('DOMContentLoaded', () => {
           throw new Error('Book not found in database');
         }
         
-        // Create book object with data from database
-        // Note: Field names should match what your API returns
         book = {
-          isbn: bookData.ISBN || bookData.isbn || bookISBN,
-          title: bookData.Title || bookData.title || 'Unknown Title',
-          author: bookData.Author || bookData.author || 'Unknown Author',
-          image: bookData.image || bookData.Image || '../ULiblogo.png',
-          edition: bookData.Edition || bookData.edition || '-',
-          copies: parseInt(bookData.Copies || bookData.copies || 0),
-          genre: bookData.Genre || bookData.genre || '',
-          yearOfPublish: bookData.YearofPublish || bookData.yearOfPublish || ''
+          isbn: bookData.ISBN || bookISBN,
+          title: bookData.Title || 'Unknown Title',
+          author: bookData.Author || 'Unknown Author',
+          image: bookData.cover || '../ULiblogo.png',
+          edition: bookData.Edition || '-',
+          copies: parseInt(bookData.Copies || 0),
+          genre: bookData.Genre || '',
+          yearOfPublish: bookData.YearofPublish || ''
         };
         
         console.log('Book object created:', book);
@@ -79,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateBookUI() {
       if (book) {
         // Set cover image
-        let imgPath = book.image || '';
+        let imgPath = book.cover || '';
         if (imgPath && !imgPath.match(/^(https?:|\/|\.\.)/)) {
           imgPath = '../' + imgPath;
         }
@@ -222,15 +220,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
           // Send reservation request to API
-          const response = await fetch('../API/reserveBook.php', {  // Changed API endpoint
+          const response = await fetch('../API/reserveRequest.php', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               bookISBN: book.isbn,
-              reserve_date: fromDate,  // Changed field name
-              expiryDate: toDate  // Changed field name
+              reserve_start: fromDate,
+              reserve_end: toDate
             })
           });
 
@@ -239,17 +237,17 @@ document.addEventListener('DOMContentLoaded', () => {
           if (response.ok && result.success) {
             // Success - update UI
             confirmBtn.disabled = true;
-            confirmBtn.textContent = 'Book Reserved!';  // Changed text
+            confirmBtn.textContent = 'Book Reserved!';
             confirmBtn.className = 'btn btn-success w-100 py-2';
             
-            // For reservations, don't decrement copies count
+
             
             // Show success message
             alert(`Book "${book.title}" successfully reserved!\n\nReservation period: ${fromDate} to ${toDate}`);
             
             // Optionally redirect after success
             setTimeout(() => {
-              window.location.href = '../search/index.php';  // Changed redirect
+              window.location.href = '../search/index.php';
             }, 2000);
             
           } else {
