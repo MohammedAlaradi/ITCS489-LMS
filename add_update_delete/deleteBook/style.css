@@ -1,0 +1,127 @@
+/* MAIN THEME COLORS (your palette) */
+:root {
+    --main-dark: #124170;   /* deep blue */
+    --accent1:   #4DA1A9;   /* teal */
+    --accent2:   #79D7BE;   /* mint green */
+    --bg-light:  #DDF4E7;   /* soft background */
+}
+
+/* BODY */
+body {
+    background-color: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* NAVBAR */
+.navbar {
+    background-color: var(--main-dark) !important;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    color: white !important;
+}
+
+/* SIDEBAR (offcanvas) */
+.sidebar {
+    width: 250px !important;
+    background-color: var(--main-dark);
+    color: white;
+}
+
+.sidebar .nav-link {
+    background-color: var(--accent1);
+    color: white;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    padding: 10px;
+    transition: 0.2s;
+}
+
+.sidebar .nav-link:hover {
+    background-color: var(--accent2);
+    color: black;
+}
+
+.sidebar .nav-link.active {
+    background-color: white;
+    color: var(--main-dark);
+    font-weight: 600;
+}
+
+/* SIDEBAR HR LINES */
+.sidebar hr {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* MENU BUTTON (3 lines icon) */
+.menu svg rect {
+    fill: white !important;
+}
+
+.menu {
+    background-color: var(--main-dark);
+    border-radius: 8px;
+}
+
+/* CARD STYLING */
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.10);
+    border: none;
+}
+
+.card-body {
+    padding: 25px;
+}
+
+/* FORM LABELS */
+.form-label {
+    font-weight: 600;
+    color: var(--main-dark);
+}
+
+/* BUTTONS */
+.btn-primary {
+    background-color: var(--accent1);
+    border: none;
+    transition: 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent2);
+    color: black;
+}
+
+.btn-outline-secondary {
+    border-color: var(--accent1);
+    color: var(--accent1);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--accent1);
+    color: white;
+}
+
+/* INPUTS */
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+/* FOOTER */
+footer {
+    margin-top: 50px;
+    font-size: 14px;
+    color: #444;
+}
+
+/* RESPONSIVE FIXES */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100% !important;
+    }
+}
