@@ -48,7 +48,7 @@
             <hr>
             <a class="nav-link btn-primary" href="">Reports</a>
             <hr>
-            <a class="nav-link btn-primary" href="">Fine Policy</a>
+            <a class="nav-link btn-primary" href="">Fine Update</a>
         </nav>
     </div>
 </div>
@@ -138,4 +138,5 @@
     </footer>
   </main>
 </body>
+
 </html>
