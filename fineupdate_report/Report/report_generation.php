@@ -26,7 +26,7 @@
     <header class="p-3 navbar navbar-expand-md navbar-dark bg-dark">
         <div class="container-fluid d-flex align-items-center">
             <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="https://via.placeholder.com/60x48/124170/FFFFFF?text=UL" alt="Logo" width="60" height="48">
+                  <img src="ULiblogo.png" alt="Logo" width="60" height="48">
                 <span class="ms-2">Report Generation</span>
             </a>
         </div>
