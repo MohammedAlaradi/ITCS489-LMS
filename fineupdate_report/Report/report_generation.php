@@ -40,11 +40,11 @@
         </div>
         <div class="offcanvas-body">
             <nav class="nav flex-column">
-                <a class="nav-link btn-primary" href="index.html">Home</a>
+                <a class="nav-link btn-primary" href="../brw_rsrv_payfine/search/index.php">Home</a>
                 <hr>
-                <a class="nav-link btn-primary" href="">Borrow a Book</a>
+                <a class="nav-link btn-primary" href="../brw_rsrv_payfine/borrowedBooks/borrowedBooks.php">Borrow a Book</a>
                 <hr>
-                <a class="nav-link btn-primary" href="">Fine</a>
+                <a class="nav-link btn-primary" href="../brw_rsrv_payfine/fine/fine.php">Fine</a>
                 <hr>
                 <a class="nav-link btn-primary" href="">Add a New Book</a>
                 <hr>
