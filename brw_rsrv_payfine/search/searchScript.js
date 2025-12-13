@@ -52,37 +52,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Remove the server-side rendering reading logic
+  
   const serverCards = document.querySelectorAll("section > .row > .col-md-6[data-title]");
   if (serverCards && serverCards.length) {
-    // If you want to keep initial server render as fallback, uncomment:
-    // Books = Array.from(serverCards).map(card => { ... });
-    // But we'll fetch fresh from DB
+    
   }
 
-  // NEW: Function to fetch books from database
+  
   async function fetchBooksFromDB() {
     try {
-      // Use relative path to API folder (go up one level, then to API)
+      
       const response = await fetch('../API/getBooks.php');
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Could not fetch books from database');
       }
       const booksData = await response.json();
       
-      // Transform data to match expected structure
+      
       Books = booksData.map(book => ({
-        isbn: book.ISBN || book.isbn || '', // Use ISBN as unique identifier
-        title: book.Title || book.title || 'Untitled',
-        genre: book.Genre || book.genre || '',
-        yearOfPublish: book.YearofPublish || book.yearOfPublish || null,
-        author: book.Author || book.author || '',
-        image: book.image || '../ULiblogo.png',
-        copies: parseInt(book.Copies || book.copies || 0),
-        // If you have other fields, add them here
+        isbn: book.ISBN || '',
+        title: book.Title || 'Untitled',
+        genre: book.Genre || '',
+        yearOfPublish: book.YearofPublish || null,
+        author: book.Author || '',
+        image: book.Cover || '../ULiblogo.png',
+        copies: parseInt(book.Copies || 0),
+        
       }));
       
-      // Hide loading spinner
+      
       const loadingSpinner = document.getElementById('loadingSpinner');
       const loadingText = document.getElementById('loadingText');
       if (loadingSpinner) loadingSpinner.style.display = 'none';
@@ -95,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error('Error fetching books:', error);
       
-      // Hide loading spinner and show error
+      
       const loadingSpinner = document.getElementById('loadingSpinner');
       const loadingText = document.getElementById('loadingText');
       if (loadingSpinner) loadingSpinner.style.display = 'none';

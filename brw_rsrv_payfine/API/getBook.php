@@ -10,23 +10,26 @@ $password = "";
 try {
     $pdo = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
     
-    // Get book ID from query parameter
-    $bookISBN = $_GET['ISBN'] ?? null;
-    
+    $bookISBN = $_GET['isbn'] ?? null;
+
     if (!$bookISBN) {
         http_response_code(400);
         echo json_encode(['error' => 'Book ISBN is required']);
         exit;
     }
+
     
-    // Fetch specific book - adjust column names based on your database
-    $sql = "SELECT * FROM book WHERE ISBN = :ISBN";
+    $sql = "SELECT ISBN, Title, Author, Genre, YearofPublish, Copies
+            FROM book WHERE ISBN = :isbn";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':ISBN' => $bookISBN]);
+    $stmt->execute([':isbn' => $bookISBN]);
     $book = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if ($book) {
+        
+        $book['Cover'] = "../API/getCover.php?isbn=" . $book['ISBN'];
         echo json_encode($book);
     } else {
         http_response_code(404);
@@ -34,6 +37,5 @@ try {
     }
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+    echo json_encode(['error' => 'Database error']);
 }
-?>
