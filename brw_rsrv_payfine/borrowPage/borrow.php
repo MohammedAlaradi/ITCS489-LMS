@@ -46,9 +46,9 @@
             <hr>
             <a class="nav-link btn-primary" href="">Delete a Book</a>
             <hr>
-            <a class="nav-link btn-primary" href="">Reports</a>
+            <a class="nav-link btn-primary" href="../fineupdate_report/Report/report_generation.php">Reports</a>
             <hr>
-            <a class="nav-link btn-primary" href="">Fine Policy</a>
+            <a class="nav-link btn-primary" href="../fineupdate_report/fineUpdate/fineupdate.php">Fine Update</a>
         </nav>
     </div>
 </div>
@@ -138,4 +138,5 @@
     <footer class="text-center py-3 mt-5">
       &copy; 2025 ULib. All rights reserved.
     </footer>
+
   </main>
