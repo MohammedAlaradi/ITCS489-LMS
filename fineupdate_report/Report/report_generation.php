@@ -27,7 +27,7 @@
         <div class="container-fluid d-flex align-items-center">
             <a class="navbar-brand d-flex align-items-center" href="index.html">
                   <img src="ULiblogo.png" alt="Logo" width="60" height="48">
-                <span class="ms-2">Report Generation</span>
+                <span class="ms-2">Report generation</span>
             </a>
         </div>
     </header>
