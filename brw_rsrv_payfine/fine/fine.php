@@ -48,7 +48,7 @@
             <hr>
             <a class="nav-link btn-primary" href="">Reports</a>
             <hr>
-            <a class="nav-link btn-primary" href="">Fine Policy</a>
+            <a class="nav-link btn-primary" href="">Fine Update</a>
         </nav>
     </div>
 </div>
@@ -79,4 +79,5 @@
     <footer class="text-center py-3 mt-5">
       &copy; 2025 ULib. All rights reserved.
     </footer>
+
   </main>
