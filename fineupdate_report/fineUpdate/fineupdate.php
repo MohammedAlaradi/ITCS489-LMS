@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>ULib - Fine Management</title>
+    <title>ULib </title>
 
     <!--Bootstrap for general styling, and self-written sheet for customization-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"  integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -72,7 +72,7 @@
         <div class="container-fluid d-flex align-items-center">
             <a class="navbar-brand d-flex align-items-center" href="index.html">
                 <img src="ULiblogo.png" alt="Logo" width="60" height="48">
-                <span class="ms-2">Fine Management</span>
+                <span class="ms-2">Fine Update</span>
             </a>
         </div>
     </header>
@@ -80,7 +80,7 @@
     <!-- Sidebar Navigation Offcanvas -->
     <div class="offcanvas offcanvas-start sidebar" tabindex="-1" id="sidebarNav" aria-labelledby="sidebarNavLabel">
         <div class="offcanvas-header d-flex justify-content-between align-items-center">
-            <h5 class="offcanvas-title mb-0" id="sidebarNavLabel">Navigation</h5>
+            <h5 class="offcanvas-title mb-0" id="sidebarNavLabel">Menu</h5>
             <button type="button" class="btn-close ms-2" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
