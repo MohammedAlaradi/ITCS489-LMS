@@ -1,0 +1,23 @@
+CREATE DATABASE IF NOT EXISTS ulib
+  DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE ulib;
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cpr VARCHAR(9) NOT NULL UNIQUE,
+    first_name VARCHAR(10) NOT NULL,
+    last_name VARCHAR(10) NOT NULL,
+    email VARCHAR(30) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    gender ENUM('Male', 'Female') DEFAULT NULL,
+    phone_country VARCHAR(4) DEFAULT NULL,
+    phone_number VARCHAR(9) DEFAULT NULL,
+    home VARCHAR(5) DEFAULT NULL,
+    road VARCHAR(4) DEFAULT NULL,
+    block VARCHAR(3) DEFAULT NULL,
+    city VARCHAR(15) DEFAULT NULL,
+    terms TINYINT(1) DEFAULT 0,
+    newsletter TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
