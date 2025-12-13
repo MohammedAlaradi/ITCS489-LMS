@@ -85,11 +85,11 @@
         </div>
         <div class="offcanvas-body">
             <nav class="nav flex-column">
-                <a class="nav-link btn-primary" href="">Home</a>
+                <a class="nav-link btn-primary" href="../brw_rsrv_payfine/search/index.php">Home</a>
                 <hr>
-                <a class="nav-link btn-primary" href="">Borrow a Book</a>
+                <a class="nav-link btn-primary" href=" ../brw_rsrv_payfine/borrowedBooks/borrowedBooks.php">Borrow a Book</a>
                 <hr>
-                <a class="nav-link btn-primary" href="">Fine</a>
+                <a class="nav-link btn-primary" href=" ../brw_rsrv_payfine/fine/fine.php">Fine</a>
                 <hr>
                 <a class="nav-link btn-primary" href="">Add a New Book</a>
                 <hr>
@@ -97,9 +97,9 @@
                 <hr>
                 <a class="nav-link btn-primary" href="">Delete a Book</a>
                 <hr>
-                <a class="nav-link btn-primary" href="">Reports</a>
+                <a class="nav-link btn-primary" href="../fineupdate_report/Report/report_generation.php">Reports</a>
                 <hr>
-                <a class="nav-link btn-primary" href="">Fine Policy</a>
+                <a class="nav-link btn-primary" href="../fineupdate_report/fineUpdate/fineupdate.php">Fine Update</a>
             </nav>
         </div>
     </div>
