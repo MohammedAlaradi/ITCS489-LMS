@@ -75,9 +75,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
 <header class="ulib-header d-flex align-items-center justify-content-between">
-    <div>
-        <h1>ULib</h1>
-        <small>University of Bahrain Library Management System</small>
+    <div class="d-flex align-items-center gap-3">
+        <img src="ULiblogo.webp" alt="ULib Logo" style="height:60px;">
+        <div>
+            <h1>ULib</h1>
+            <small>University of Bahrain Library Management System</small>
+        </div>
     </div>
     <div class="d-none d-md-block">
         <span class="badge bg-light text-dark">Register</span>
@@ -220,3 +223,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
