@@ -13,7 +13,7 @@ try {
 $sql = "SELECT b.ISBN, b.borrowDate, b.returnDate,
 bk.Title, bk.Author, bk.cover
         FROM borrowed b
-        JOIN book bk WHERE bk.ISBN = b.ISBN";
+        JOIN book bk WHERE bk.ISBN = b.ISBN AND userID = :userID";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 

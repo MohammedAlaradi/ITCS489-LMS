@@ -180,8 +180,8 @@ hr{
 }
 
 /* Make the Confirm Borrow button clearly disabled/grey when inputs are invalid */
-#confirmBorrow:disabled,
-#confirmBorrow[disabled] {
+#confirmReserve:disabled,
+#confirmReserve[disabled] {
   background-color: #9e9e9e !important; /* grey */
   border-color: #9e9e9e !important;
   color: #ffffff !important;
@@ -191,23 +191,31 @@ hr{
 }
 
 /* Prevent hover styles from changing the disabled button */
-#confirmBorrow:disabled:hover,
-#confirmBorrow[disabled]:hover {
+#confirmReserve:disabled:hover,
+#confirmReserve[disabled]:hover {
   background-color: #9e9e9e !important;
   border-color: #9e9e9e !important;
 }
 
 /* When inputs are valid and the button is enabled, make it green */
-#confirmBorrow:not(:disabled),
-#confirmBorrow:not([disabled]) {
+#confirmReserve:not(:disabled),
+#confirmReserve:not([disabled]) {
   background-color: rgb(37, 165, 37) !important; /* same as .btn-success */
   border-color: rgb(37, 165, 37) !important;
   color: #ffffff !important;
   cursor: pointer;
 }
 
-#confirmBorrow:not(:disabled):hover,
-#confirmBorrow:not([disabled]):hover {
+#confirmReserve:not(:disabled):hover,
+#confirmReserve:not([disabled]):hover {
   background-color: rgb(32, 141, 32) !important; /* darker on hover */
   border-color: rgb(32, 141, 32) !important;
+}
+
+#cancelReserve,
+#confirmReserve {
+  height: 42px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  line-height: 1.25;
 }

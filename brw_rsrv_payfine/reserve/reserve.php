@@ -99,6 +99,10 @@
                   <p id="authorField" class="form-control-plaintext">-</p>
                 </div>
                 <div class="mb-3">
+                  <label class="form-label"><strong>Publisher</strong></label>
+                  <p id="publisherField" class="form-control-plaintext">-</p>
+                </div>
+                <div class="mb-3">
                   <label class="form-label"><strong>Copies left</strong></label>
                   <p id="copiesField" class="form-control-plaintext">-</p>
                 </div>

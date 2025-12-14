@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isbnField = document.getElementById('isbnField');
     const editionField = document.getElementById('editionField');
     const authorField = document.getElementById('authorField');
+    const publisherField = document.getElementById('publisherField');
 
     // Fetch book details from database
     async function fetchBookDetails() {
@@ -23,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         console.log('Fetching book details for ISBN:', bookISBN);
 
-        // FIX 1: correct parameter name
         const response = await fetch(`../API/getBook.php?isbn=${bookISBN}`);
 
         if (!response.ok) {
@@ -41,16 +41,17 @@ document.addEventListener('DOMContentLoaded', () => {
           throw new Error('Book not found in database');
         }
 
-        // FIX 2: use Cover URL returned by backend
+        //use Cover URL returned by backend
         book = {
-          isbn: bookData.ISBN || bookISBN,
+          isbn: bookData.ISBN,
           title: bookData.Title || 'Unknown Title',
           author: bookData.Author || 'Unknown Author',
           cover: bookData.Cover || '../ULiblogo.png',
           edition: bookData.Edition || '-',
           copies: parseInt(bookData.Copies || 0),
           genre: bookData.Genre || '',
-          yearOfPublish: bookData.YearofPublish || ''
+          yearOfPublish: bookData.YearofPublish || '',
+          publisher: bookData.Publisher || ''
         };
 
         console.log('Book object created:', book);
@@ -69,13 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update UI
     function updateBookUI() {
       if (book) {
-        // FIX 3: consistent cover usage
+        //consistent cover usage
         coverImg.src = book.cover || '../ULiblogo.png';
 
         titleField.textContent = book.title || '-';
         isbnField.textContent = book.isbn || '-';
         editionField.textContent = book.edition || '-';
         authorField.textContent = book.author || '-';
+        publisherField.textContent = book.publisher || '-';
 
         const copiesField = document.getElementById('copiesField');
         if (copiesField) {
@@ -95,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isbnField.textContent = bookISBN || '-';
         editionField.textContent = 'Loading...';
         authorField.textContent = 'Loading...';
+        publisherField.textContent = 'Loading...';
 
         const copiesField = document.getElementById('copiesField');
         if (copiesField) {

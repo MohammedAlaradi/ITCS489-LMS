@@ -18,18 +18,19 @@ try {
         throw new Exception('No input data received');
     }
 
-    $bookISBN    = $input['bookISBN'] ?? null;
-    $borrow_date = $input['borrow_date'] ?? null;
-    $return_date = $input['return_date'] ?? null;
+    $userID = $input['userID'];
+    $bookISBN    = $input['bookISBN'];
+    $borrow_date = $input['borrow_date'];
+    $return_date = $input['return_date'];
 
-    if (!$bookISBN || !$borrow_date || !$return_date) {
-        throw new Exception('Missing required fields: bookISBN, borrow_date, and return_date are required');
+    if (!$userID || !$bookISBN || !$borrow_date || !$return_date) {
+        throw new Exception('Missing required fields: userID, bookISBN, borrowDate, and returnDate are required');
     }
 
     // Start transaction
     $pdo->beginTransaction();
 
-    // 1. Check if book exists
+    //Check if book exists
     $checkBook = $pdo->prepare("SELECT Copies, Title, Author FROM book WHERE ISBN = ?");
     $checkBook->execute([$bookISBN]);
     $book = $checkBook->fetch(PDO::FETCH_ASSOC);
@@ -44,10 +45,10 @@ try {
 
     //Insert borrow record
     $insertBorrow = $pdo->prepare("
-        INSERT INTO borrowed (ISBN, borrowDate, returnDate)
+        INSERT INTO borrowed (userID, ISBN, borrowDate, returnDate)
         VALUES (?, ?, ?, ?)
     ");
-    $insertBorrow->execute([$bookISBN, $borrow_date, $return_date]);
+    $insertBorrow->execute([$userID, $bookISBN, $borrow_date, $return_date]);
 
     // Decrease book copies
     $updateBook = $pdo->prepare("UPDATE book SET Copies = Copies - 1 WHERE ISBN = ? AND Copies > 0");

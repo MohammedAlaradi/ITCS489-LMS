@@ -21,7 +21,7 @@ try {
     }
 
     
-    $sql = "SELECT ISBN, Title, Author, Edition,  Genre, YearofPublish, Copies
+    $sql = "SELECT ISBN, Title, Author, Edition,  Genre, YearofPublish, Publisher, Copies
             FROM book WHERE ISBN = :isbn";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':isbn' => $bookISBN]);

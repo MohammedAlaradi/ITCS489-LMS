@@ -20,7 +20,7 @@ try {
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$row || !$row['Cover']) {
-        
+
         header("Content-Type: image/png");
         readfile("../ULiblogo.png");
         exit;

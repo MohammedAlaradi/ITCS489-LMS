@@ -18,23 +18,23 @@ try {
         exit;
     }
 
-    // Begin transaction to ensure consistency
+    // Begin transaction
     $pdo->beginTransaction();
 
-    // 1. Delete from borrow table
+    //Delete from borrow table
     $stmt = $pdo->prepare("DELETE FROM borrow WHERE ISBN = ?");
     $successBorrowDelete = $stmt->execute([$ISBN]);
 
-    // 2. Update number of copies in book table
+    //Update number of copies in book table
     $stmt2 = $pdo->prepare("UPDATE book SET Copies = Copies + 1 WHERE ISBN = ?");
     $successCopiesUpdate = $stmt2->execute([$ISBN]);
 
-    // If both succeeded, commit
+    //If both succeeded, commit
     if ($successBorrowDelete && $successCopiesUpdate) {
         $pdo->commit();
         echo json_encode(["success" => true]);
     } else {
-        // Rollback on error
+        //Rollback on error
         $pdo->rollBack();
         echo json_encode(["success" => false, "error" => "Failed to update database"]);
     }

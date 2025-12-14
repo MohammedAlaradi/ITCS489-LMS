@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isbnField = document.getElementById('isbnField');
     const editionField = document.getElementById('editionField');
     const authorField = document.getElementById('authorField');
+    const publisherField = document.getElementById('publisherField');
 
     // Fetch book details
     async function fetchBookDetails() {
@@ -23,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         console.log('Fetching book details for ISBN:', bookISBN);
 
-        // ✅ FIX: correct query param
+        //
         const response = await fetch(`../API/getBook.php?isbn=${bookISBN}`);
 
         if (!response.ok) {
@@ -41,16 +42,17 @@ document.addEventListener('DOMContentLoaded', () => {
           throw new Error('Book not found in database');
         }
 
-        // ✅ FIX: cover comes from getCover.php
+        //
         book = {
-          isbn: bookData.ISBN || bookISBN,
+          isbn: bookData.ISBN,
           title: bookData.Title || 'Unknown Title',
           author: bookData.Author || 'Unknown Author',
           cover: `../API/getCover.php?isbn=${bookISBN}`,
           edition: bookData.Edition || '-',
           copies: parseInt(bookData.Copies || 0),
           genre: bookData.Genre || '',
-          yearOfPublish: bookData.YearofPublish || ''
+          yearOfPublish: bookData.YearofPublish || '',
+          publisher: bookData.Publisher || ''
         };
 
         updateBookUI();
@@ -73,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isbnField.textContent = book.isbn || '-';
         editionField.textContent = book.edition || '-';
         authorField.textContent = book.author || '-';
+        publisherField.textContent = book.publisher || '-';
 
         const copiesField = document.getElementById('copiesField');
         if (copiesField) {
