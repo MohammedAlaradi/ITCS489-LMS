@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 
 $dbhost = "localhost";
-$dbname = "lms_test";
+$dbname = "ulib";
 $dbuser = "root";
 $password = "";
 

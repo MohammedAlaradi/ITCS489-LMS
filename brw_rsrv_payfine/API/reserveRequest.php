@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 
 $dbhost = "localhost";
-$dbname = "lms_test";
+$dbname = "ulib";
 $dbuser = "root";
 $password = "";
 
@@ -12,11 +12,12 @@ try {
 
     $input = json_decode(file_get_contents("php://input"), true);
 
-    $ISBN = $input['bookISBN'] ?? null;
-    $reserveStart = $input['reserve_start'] ?? null;
-    $reserveEnd = $input['reserve_end'] ?? null;
+    $ID = $input['userID'];
+    $ISBN = $input['bookISBN'];
+    $reserveStart = $input['reserve_start'];
+    $reserveEnd = $input['reserve_end'];
 
-    if (!$ISBN || !$reserveStart || !$reserveEnd) {
+    if (!$ID || !$ISBN || !$reserveStart || !$reserveEnd) {
         echo json_encode([
             "success" => false,
             "message" => "Missing required parameters"
@@ -25,11 +26,11 @@ try {
     }
 
     $stmt = $pdo->prepare("
-        INSERT INTO reserve (ISBN, reserve_start, reserve_end)
-        VALUES (?, ?, ?)
+        INSERT INTO reserved (UserID, ISBN, ReserveDate, ReturnDate)
+        VALUES (?, ?, ?, ?)
     ");
 
-    $success = $stmt->execute([$ISBN, $reserveStart, $reserveEnd]);
+    $success = $stmt->execute([$ID, $ISBN, $reserveStart, $reserveEnd]);
 
     echo json_encode([
         "success" => $success,
