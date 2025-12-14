@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const bookCard = document.createElement("div");
       bookCard.classList.add("col-md-6", "mb-2");
       bookCard.innerHTML = `
-        <div class="card mb-2" style="max-width: 680px;">
+        <div class="card mb-2" style="max-width: 680px; max-height: 220px;">
           <div class="row g-0">
             <div class="col-md-4">
               <img src="${book.image || '../ULiblogo.png'}" class="img-fluid rounded-start" alt="Book Cover">
@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p class="card-text"><strong>Genre:</strong> ${book.genre}</p>
                 <p class="card-text"><strong>Year Of Publish:</strong> ${book.yearOfPublish}</p>
                 <p class="card-text"><strong>Author:</strong> ${book.author}</p>
-                ${book.copies === 0 ? 
+                ${book.copies === 0 ?
                   `<button class="btn btn-primary w-100 rounded reserve-btn" data-book-isbn="${book.isbn}">Reserve</button>` : 
                   `<button class="btn btn-primary w-100 rounded borrow-btn" data-book-isbn="${book.isbn}">Borrow</button>`}
               </div>
