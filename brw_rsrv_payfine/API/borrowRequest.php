@@ -1,4 +1,5 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
@@ -45,7 +46,7 @@ try {
 
     //Insert borrow record
     $insertBorrow = $pdo->prepare("
-        INSERT INTO borrowed (userID, ISBN, borrowDate, returnDate)
+        INSERT INTO borrowed ( user_id, ISBN, borrowDate, returnDate)
         VALUES (?, ?, ?, ?)
     ");
     $insertBorrow->execute([$userID, $bookISBN, $borrow_date, $return_date]);
@@ -64,6 +65,12 @@ try {
 
     $pdo->commit();
 
+    echo json_encode([
+    'success' => true,
+    'message' => 'Book borrowed successfully',
+    'remainingCopies' => $updatedBook['Copies']
+]);
+
 } catch (Exception $e) {
     if (isset($pdo) && $pdo->inTransaction()) {
         $pdo->rollBack();
@@ -74,5 +81,8 @@ try {
         'success' => false,
         'message' => $e->getMessage()
     ]);
+
+exit;
+
 }
 ?>

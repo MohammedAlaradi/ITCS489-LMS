@@ -2,28 +2,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('borrowedCardsRow');
     if (!container) return;
 
-    const params = new URLSearchParams(window.location.search);
-    const userID = params.get('userID');
-
-    if (!userID) {
-        container.innerHTML = `
-            <div class="col-12">
-                <div class="alert alert-danger">
-                    User not identified. Please log in again.
-                </div>
-            </div>
-        `;
-        return;
-}
-
-
-    fetch(`../API/getBorrowed.php?userID=${encodeURIComponent(userID)}`)
-        .then(res => res.json())
+    // Fetch borrowed books for the logged-in user
+    fetch('../API/getBorrowed.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch borrowed books');
+            }
+            return response.json();
+        })
         .then(data => {
             if (!Array.isArray(data) || data.length === 0) {
                 container.innerHTML = `
                     <div class="col-12">
-                        <div class="alert alert-info">You have no borrowed books recorded.</div>
+                        <div class="alert alert-info">
+                            You have no borrowed books recorded.
+                        </div>
                     </div>
                 `;
                 return;
@@ -32,41 +25,53 @@ document.addEventListener('DOMContentLoaded', () => {
             container.innerHTML = '';
             data.forEach(record => renderBorrowedCard(record));
         })
-        .catch(err => {
-            console.error('Fetching Error:', err);
+        .catch(error => {
+            console.error('Fetching Error:', error);
             container.innerHTML = `
                 <div class="col-12">
-                    <div class="alert alert-danger">Failed to load borrowed books.</div>
+                    <div class="alert alert-danger">
+                        Failed to load borrowed books. Please try again later.
+                    </div>
                 </div>
             `;
         });
 
-
     function renderBorrowedCard(rec) {
         const col = document.createElement('div');
-        col.className = 'col-12 col-md-6';
+        col.className = 'col-12 col-md-6 mb-3';
 
-        const title = rec.Title || "Untitled Book";
-        const author = rec.Author || "-";
-        const img = fetch("../getCover.php") || "../ULiblogo.png";
+        const title  = rec.Title || 'Untitled Book';
+        const author = rec.Author || '-';
+
+        // Cover image URL (safe fallback)
+        const imgSrc = rec.ISBN
+            ? `../API/getCover.php?isbn=${encodeURIComponent(rec.ISBN)}`
+            : '../ULiblogo.png';
 
         col.innerHTML = `
-            <div class="card">
+            <div class="card shadow-sm h-100">
                 <div class="row g-0">
                     <div class="col-4">
-                        <img src="${img}" class="img-fluid rounded-start" alt="cover">
+                        <img src="${imgSrc}" class="img-fluid rounded-start" alt="Book cover"
+                            onerror="this.src='../ULiblogo.png'">
                     </div>
                     <div class="col-8">
-                        <div class="card-body">
+                        <div class="card-body d-flex flex-column h-100">
                             <h5 class="card-title">${title}</h5>
-                            <p class="card-text mb-1"><strong>Author:</strong> ${author}</p>
+
                             <p class="card-text mb-1">
-                                <strong>From:</strong> ${rec.borrow_date}
-                                <strong class="ms-3">To:</strong> ${rec.return_date ?? "-"}
+                                <strong>Author:</strong> ${author}
                             </p>
 
-                            <div class="d-flex justify-content-end mt-2">
-                                <button class="btn btn-primary w-100 rounded return-btn">Return</button>
+                            <p class="card-text mb-2">
+                                <strong>From:</strong> ${rec.borrow_date}<br>
+                                <strong>To:</strong> ${rec.return_date ?? '-'}
+                            </p>
+
+                            <div class="mt-auto">
+                                <button class="btn btn-primary w-100 return-btn">
+                                    Return
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -76,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         container.appendChild(col);
 
-
+        // Return book handler
         const returnBtn = col.querySelector('.return-btn');
         returnBtn.addEventListener('click', () => {
             if (!confirm(`Mark "${title}" as returned?`)) return;
@@ -86,7 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ISBN: rec.ISBN })
             })
-                .then(res => res.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Return request failed');
+                    }
+                    return response.json();
+                })
                 .then(resp => {
                     if (resp.success) {
                         col.remove();
@@ -94,19 +104,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (container.children.length === 0) {
                             container.innerHTML = `
                                 <div class="col-12">
-                                    <div class="alert alert-info">You have no borrowed books recorded.</div>
+                                    <div class="alert alert-info">
+                                        You have no borrowed books recorded.
+                                    </div>
                                 </div>
                             `;
                         }
 
-                        alert("Book marked as returned.");
+                        alert('Book marked as returned.');
                     } else {
-                        alert("Failed to return book.");
+                        alert(resp.message || 'Failed to return book.');
                     }
                 })
                 .catch(err => {
-                    console.error("Return API error:", err);
-                    alert("Failed to contact server.");
+                    console.error('Return API error:', err);
+                    alert('Failed to contact server.');
                 });
         });
     }

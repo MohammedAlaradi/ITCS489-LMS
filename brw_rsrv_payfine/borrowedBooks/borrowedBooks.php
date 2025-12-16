@@ -37,8 +37,8 @@
                 <a class="nav-link btn-primary" href="">Add a New Book</a><hr>
                 <a class="nav-link btn-primary" href="">Update a Book</a><hr>
                 <a class="nav-link btn-primary" href="">Delete a Book</a><hr>
-                <a class="nav-link btn-primary" href="">Reports</a><hr>
-                <a class="nav-link btn-primary" href="">Fine Policy</a>
+                <a class="nav-link btn-primary" href="../../fineupdate_report/Report/report_generation.php">Reports</a><hr>
+                <a class="nav-link btn-primary" href="../../fineupdate_report/fineUpdate/fineupdate.php">Fine Policy</a>
             </nav>
         </div>
     </div>

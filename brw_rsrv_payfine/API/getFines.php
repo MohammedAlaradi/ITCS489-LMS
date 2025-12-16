@@ -25,15 +25,19 @@ try {
 
     $sql = "
         SELECT
-            b.ISBN,
-            b.borrowDate AS borrow_date,
-            b.returnDate AS return_date,
-            bk.Title,
-            bk.Author
-        FROM borrowed b
-        JOIN book bk ON bk.ISBN = b.ISBN
-        WHERE b.user_id = :user_id
-        ORDER BY b.borrowDate DESC
+            f.FinePatch        AS fine_id,
+            f.ISBN,
+            f.DueDate,
+            f.FineRate,
+            f.FineAmount,
+            f.Status,
+            f.Reason,
+            bk.Title
+        FROM fine f
+        LEFT JOIN book bk ON bk.ISBN = f.ISBN
+        WHERE f.UserID = :user_id
+          AND f.Status IN ('Pending', 'Overdue')
+        ORDER BY f.DueDate ASC
     ";
 
     $stmt = $pdo->prepare($sql);
@@ -49,3 +53,4 @@ try {
         'details' => $e->getMessage()
     ]);
 }
+?>
