@@ -22,7 +22,7 @@ try {
     $pdo->beginTransaction();
 
     //Delete from borrow table
-    $stmt = $pdo->prepare("DELETE FROM borrow WHERE ISBN = ?");
+    $stmt = $pdo->prepare("DELETE FROM borrowed WHERE ISBN = ?");
     $successBorrowDelete = $stmt->execute([$ISBN]);
 
     //Update number of copies in book table

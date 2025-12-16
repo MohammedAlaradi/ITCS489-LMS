@@ -12,12 +12,12 @@ try {
 
     $input = json_decode(file_get_contents("php://input"), true);
 
-    $ID = $input['userID'];
+    $userID = $_SESSION['user_id'];
     $ISBN = $input['bookISBN'];
     $reserveStart = $input['reserve_start'];
     $reserveEnd = $input['reserve_end'];
 
-    if (!$ID || !$ISBN || !$reserveStart || !$reserveEnd) {
+    if (!$userID || !$ISBN || !$reserveStart || !$reserveEnd) {
         echo json_encode([
             "success" => false,
             "message" => "Missing required parameters"
@@ -30,7 +30,7 @@ try {
         VALUES (?, ?, ?, ?)
     ");
 
-    $success = $stmt->execute([$ID, $ISBN, $reserveStart, $reserveEnd]);
+    $success = $stmt->execute([$userID, $ISBN, $reserveStart, $reserveEnd]);
 
     echo json_encode([
         "success" => $success,

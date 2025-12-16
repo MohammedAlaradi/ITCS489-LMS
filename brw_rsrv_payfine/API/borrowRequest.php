@@ -18,7 +18,7 @@ try {
         throw new Exception('No input data received');
     }
 
-    $userID = $input['userID'];
+    $userID = $_SESSION['user_id'];
     $bookISBN    = $input['bookISBN'];
     $borrow_date = $input['borrow_date'];
     $return_date = $input['return_date'];

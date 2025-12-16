@@ -6,21 +6,16 @@ $dbname = "ulib";
 $dbuser = "root";
 $password = "";
 
-if (!isset($_GET['userID'])) {
+if (!isset($_SESSION['user_id'])) {
     http_response_code(400);
     echo json_encode(['error' => 'Missing userID']);
     exit;
 }
 
-$userID = $_GET['userID'];
+$userID = $_SESSION['user_id'];
 
 try {
-    $pdo = new PDO(
-        "mysql:host=$dbhost;dbname=$dbname;charset=utf8",
-        $dbuser,
-        $password,
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-    );
+    $pdo = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8",$dbuser, $password,[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 
     $sql = "
         SELECT
