@@ -10,22 +10,25 @@ $action = $_GET['action'] ?? '';
 if ($action === "getFines") {
     $stmt = $pdo->query("
         SELECT 
-            f.id,
-            f.member_id,
-            m.name AS member_name,
-            f.book_id,
-            b.title AS book_title,
-            f.amount,
-            f.due_date,
-            f.status,
-            f.reason,
-            f.notes
-        FROM fines f
-        LEFT JOIN members m ON f.member_id = m.id
-        LEFT JOIN books b ON f.book_id = b.id
-        ORDER BY f.id DESC
+            f.FinePatch,
+            f.id AS user_id,
+            CONCAT(u.FirstName,' ',u.LastName) AS user_name,
+            f.ISBN,
+            b.Title AS book_title,
+            f.FineAmount,
+            f.FineRate,
+            f.Status,
+            f.Notes
+        FROM fine f
+        JOIN users u ON f.id = u.id
+        LEFT JOIN book b ON f.ISBN = b.ISBN
+        ORDER BY f.FinePatch DESC
     ");
-    echo json_encode(["success" => true, "data" => $stmt->fetchAll()]);
+
+    echo json_encode([
+        "success" => true,
+        "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)
+    ]);
     exit;
 }
 
@@ -33,8 +36,26 @@ if ($action === "getFines") {
    GET FINE HISTORY
 ========================= */
 if ($action === "getFineHistory") {
-    $stmt = $pdo->query("SELECT * FROM fine_history ORDER BY date DESC");
-    echo json_encode(["success" => true, "data" => $stmt->fetchAll()]);
+    $stmt = $pdo->query("
+        SELECT 
+            h.ChangeDate,
+            h.FinePatch,
+            CONCAT(u.FirstName,' ',u.LastName) AS user_name,
+            h.ISBN,
+            h.OldStatus,
+            h.NewStatus,
+            h.Amount,
+            h.Notes,
+            h.UpdatedBy
+        FROM fine_history h
+        JOIN users u ON h.id = u.id
+        ORDER BY h.ChangeDate DESC
+    ");
+
+    echo json_encode([
+        "success" => true,
+        "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)
+    ]);
     exit;
 }
 
@@ -52,79 +73,104 @@ if ($action === "updateFine") {
     $pdo->beginTransaction();
 
     try {
-        // Previous status
-        $prev = $pdo->prepare("SELECT status FROM fines WHERE id=?");
-        $prev->execute([$data['fine_id']]);
-        $previousStatus = $prev->fetchColumn() ?: '-';
+        // Get previous status
+        $prevStmt = $pdo->prepare("
+            SELECT Status 
+            FROM fine 
+            WHERE FinePatch = ?
+        ");
+        $prevStmt->execute([$data['FinePatch']]);
+        $prev = $prevStmt->fetch(PDO::FETCH_ASSOC);
 
         // Update fine
         $stmt = $pdo->prepare("
-            UPDATE fines 
-            SET amount=?, reason=?, status=?, notes=?
-            WHERE id=?
+            UPDATE fine
+            SET 
+                FineAmount = ?,
+                FineRate   = ?,
+                Status     = ?,
+                Notes      = ?,
+                ISBN       = ?
+            WHERE FinePatch = ?
         ");
+
         $stmt->execute([
-            $data['amount'],
-            $data['reason'],
-            $data['status'],
-            $data['notes'],
-            $data['fine_id']
+            $data['FineAmount'],
+            $data['FineRate'],
+            $data['Status'],
+            $data['Notes'],
+            $data['ISBN'],
+            $data['FinePatch']
         ]);
 
         // Insert history
         $hist = $pdo->prepare("
             INSERT INTO fine_history
-            (date, member_id, book_id, amount, previous_status, new_status, updated_by, notes)
-            VALUES (CURDATE(), ?, ?, ?, ?, ?, 'Admin', ?)
+            (ChangeDate, FinePatch, id, ISBN, OldStatus, NewStatus, Amount, Notes, UpdatedBy)
+            VALUES (CURDATE(), ?, ?, ?, ?, ?, ?, ?, 'Admin')
         ");
+
         $hist->execute([
-            $data['member_id'],
-            $data['book_id'],
-            $data['amount'],
-            $previousStatus,
-            $data['status'],
-            $data['notes']
+            $data['FinePatch'],
+            $data['id'],          // user id
+            $data['ISBN'],
+            $prev['Status'],
+            $data['Status'],
+            $data['FineAmount'],
+            $data['Notes']
         ]);
 
         $pdo->commit();
         echo json_encode(["success" => true]);
     } catch (Exception $e) {
         $pdo->rollBack();
-        echo json_encode(["success" => false, "message" => $e->getMessage()]);
+        echo json_encode([
+            "success" => false,
+            "message" => $e->getMessage()
+        ]);
     }
     exit;
 }
 
 /* =========================
-   MARK FINE PAID
+   MARK FINE AS PAID
 ========================= */
 if ($action === "markFinePaid") {
     $data = json_decode(file_get_contents("php://input"), true);
-    $fineId = $data['fine_id'] ?? null;
+    $finePatch = $data['FinePatch'] ?? null;
 
-    if (!$fineId) {
-        echo json_encode(["success" => false]);
+    if (!$finePatch) {
+        echo json_encode(["success" => false, "message" => "FinePatch missing"]);
         exit;
     }
 
     $pdo->beginTransaction();
-    try {
-        $prev = $pdo->prepare("SELECT * FROM fines WHERE id=?");
-        $prev->execute([$fineId]);
-        $fine = $prev->fetch();
 
-        $pdo->prepare("UPDATE fines SET status='Paid' WHERE id=?")
-            ->execute([$fineId]);
+    try {
+        $prevStmt = $pdo->prepare("
+            SELECT id, ISBN, FineAmount, Status
+            FROM fine
+            WHERE FinePatch = ?
+        ");
+        $prevStmt->execute([$finePatch]);
+        $fine = $prevStmt->fetch(PDO::FETCH_ASSOC);
+
+        $pdo->prepare("
+            UPDATE fine
+            SET Status = 'Paid'
+            WHERE FinePatch = ?
+        ")->execute([$finePatch]);
 
         $pdo->prepare("
             INSERT INTO fine_history
-            (date, member_id, book_id, amount, previous_status, new_status, updated_by, notes)
-            VALUES (CURDATE(), ?, ?, ?, ?, 'Paid', 'Admin', 'Marked paid')
+            (ChangeDate, FinePatch, id, ISBN, OldStatus, NewStatus, Amount, Notes, UpdatedBy)
+            VALUES (CURDATE(), ?, ?, ?, ?, 'Paid', ?, 'Marked as paid', 'Admin')
         ")->execute([
-            $fine['member_id'],
-            $fine['book_id'],
-            $fine['amount'],
-            $fine['status']
+            $finePatch,
+            $fine['id'],
+            $fine['ISBN'],
+            $fine['Status'],
+            $fine['FineAmount']
         ]);
 
         $pdo->commit();
@@ -137,17 +183,27 @@ if ($action === "markFinePaid") {
 }
 
 /* =========================
-   GET MEMBER INFO
+   GET USER INFO
 ========================= */
-if ($action === "getMember") {
-    $id = $_GET['memberId'] ?? '';
-    $stmt = $pdo->prepare("SELECT name,email,phone FROM members WHERE id=?");
+if ($action === "getUser") {
+    $id = $_GET['id'] ?? '';
+
+    $stmt = $pdo->prepare("
+        SELECT 
+            FirstName,
+            LastName,
+            Email,
+            PhoneNumber
+        FROM users
+        WHERE id = ?
+    ");
     $stmt->execute([$id]);
-    $member = $stmt->fetch();
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     echo json_encode([
-        "success" => (bool)$member,
-        "member"  => $member
+        "success" => (bool)$user,
+        "user" => $user
     ]);
     exit;
 }
@@ -156,16 +212,25 @@ if ($action === "getMember") {
    GET BOOK INFO
 ========================= */
 if ($action === "getBook") {
-    $id = $_GET['bookId'] ?? '';
-    $stmt = $pdo->prepare("SELECT title,author,isbn FROM books WHERE id=?");
-    $stmt->execute([$id]);
-    $book = $stmt->fetch();
+    $isbn = $_GET['ISBN'] ?? '';
+
+    $stmt = $pdo->prepare("
+        SELECT Title, Author, ISBN
+        FROM book
+        WHERE ISBN = ?
+    ");
+    $stmt->execute([$isbn]);
+
+    $book = $stmt->fetch(PDO::FETCH_ASSOC);
 
     echo json_encode([
         "success" => (bool)$book,
-        "book"    => $book
+        "book" => $book
     ]);
     exit;
 }
 
-echo json_encode(["success" => false, "message" => "Invalid action"]);
+echo json_encode([
+    "success" => false,
+    "message" => "Invalid action"
+]);
