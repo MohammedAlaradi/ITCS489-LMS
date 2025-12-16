@@ -8,39 +8,106 @@ require "db.php";
 
 $method = $_SERVER["REQUEST_METHOD"];
 
+/* =========================
+   GET REPORTS
+========================= */
 if ($method === "GET") {
-    if (isset($_GET["id"])) {
-        $stmt = $pdo->prepare("SELECT * FROM reports WHERE id=?");
-        $stmt->execute([$_GET["id"]]);
+
+    // Get single report
+    if (isset($_GET["fid"])) {
+        $stmt = $pdo->prepare("
+            SELECT 
+                fid,
+                type,
+                date_range,
+                generated_on,
+                records
+            FROM reports
+            WHERE fid = ?
+        ");
+        $stmt->execute([$_GET["fid"]]);
         echo json_encode($stmt->fetch(PDO::FETCH_ASSOC));
-    } else {
-        $stmt = $pdo->query("SELECT * FROM reports ORDER BY generated_on DESC");
-        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        exit;
     }
+
+    // Get all reports
+    $stmt = $pdo->query("
+        SELECT 
+            fid,
+            type,
+            date_range,
+            generated_on,
+            records
+        FROM reports
+        ORDER BY generated_on DESC
+    ");
+    echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+    exit;
 }
 
+/* =========================
+   CREATE REPORT
+========================= */
 if ($method === "POST") {
+
     $data = json_decode(file_get_contents("php://input"), true);
 
-    $stmt = $pdo->prepare(
-        "INSERT INTO reports (id,type,date_range,generated_on,records)
-         VALUES (?,?,?,?,?)"
-    );
+    if (
+        empty($data["type"]) ||
+        empty($data["dateRange"]) ||
+        !isset($data["records"])
+    ) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Missing required fields"
+        ]);
+        exit;
+    }
+
+    $stmt = $pdo->prepare("
+        INSERT INTO reports (type, date_range, generated_on, records)
+        VALUES (?, ?, NOW(), ?)
+    ");
 
     $stmt->execute([
-        $data["id"],
         $data["type"],
         $data["dateRange"],
-        $data["generatedOn"],
         $data["records"]
     ]);
 
-    echo json_encode(["success" => true]);
+    echo json_encode([
+        "success" => true,
+        "fid" => $pdo->lastInsertId()
+    ]);
+    exit;
 }
 
+/* =========================
+   DELETE REPORT
+========================= */
 if ($method === "DELETE") {
-    $id = $_GET["id"] ?? "";
-    $stmt = $pdo->prepare("DELETE FROM reports WHERE id=?");
-    $stmt->execute([$id]);
-    echo json_encode(["deleted" => true]);
+
+    $fid = $_GET["fid"] ?? null;
+
+    if (!$fid) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Report fid required"
+        ]);
+        exit;
+    }
+
+    $stmt = $pdo->prepare("DELETE FROM reports WHERE fid = ?");
+    $stmt->execute([$fid]);
+
+    echo json_encode([
+        "success" => true,
+        "deleted_fid" => $fid
+    ]);
+    exit;
 }
+
+echo json_encode([
+    "success" => false,
+    "message" => "Invalid request"
+]);
