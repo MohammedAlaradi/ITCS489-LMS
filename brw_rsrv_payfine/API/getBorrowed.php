@@ -6,19 +6,42 @@ $dbname = "ulib";
 $dbuser = "root";
 $password = "";
 
+if (!isset($_GET['userID'])) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Missing userID']);
+    exit;
+}
+
+$userID = $_GET['userID'];
+
 try {
-    $pdo = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = new PDO(
+        "mysql:host=$dbhost;dbname=$dbname;charset=utf8",
+        $dbuser,
+        $password,
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
 
-$sql = "SELECT b.ISBN, b.borrowDate, b.returnDate,
-bk.Title, bk.Author, bk.cover
+    $sql = "
+        SELECT
+            b.ISBN,
+            b.borrowDate AS borrow_date,
+            b.returnDate AS return_date,
+            bk.Title,
+            bk.Author
         FROM borrowed b
-        JOIN book bk WHERE bk.ISBN = b.ISBN AND userID = :userID";
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
+        JOIN book bk ON bk.ISBN = b.ISBN
+        WHERE b.userID = :userID
+        ORDER BY b.borrowDate DESC
+    ";
 
-echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':userID', $userID, PDO::PARAM_INT);
+    $stmt->execute();
+
+    echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+    echo json_encode(['error' => 'Database error']);
 }

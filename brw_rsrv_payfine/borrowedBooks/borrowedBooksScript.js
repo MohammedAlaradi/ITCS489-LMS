@@ -2,10 +2,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('borrowedCardsRow');
     if (!container) return;
 
-    // --------------------------------------------------------
-    // 1. Load borrowed books from database
-    // --------------------------------------------------------
-    fetch('../API/getBorrowed.php')
+    const params = new URLSearchParams(window.location.search);
+    const userID = params.get('userID');
+
+    if (!userID) {
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    User not identified. Please log in again.
+                </div>
+            </div>
+        `;
+        return;
+}
+
+
+    fetch(`../API/getBorrowed.php?userID=${encodeURIComponent(userID)}`)
         .then(res => res.json())
         .then(data => {
             if (!Array.isArray(data) || data.length === 0) {
@@ -21,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data.forEach(record => renderBorrowedCard(record));
         })
         .catch(err => {
-            console.error('API ERROR:', err);
+            console.error('Fetching Error:', err);
             container.innerHTML = `
                 <div class="col-12">
                     <div class="alert alert-danger">Failed to load borrowed books.</div>
@@ -36,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const title = rec.Title || "Untitled Book";
         const author = rec.Author || "-";
-        const img = rec.cover ? rec.image : "../ULiblogo.png";
+        const img = fetch("../getCover.php") || "../ULiblogo.png";
 
         col.innerHTML = `
             <div class="card">

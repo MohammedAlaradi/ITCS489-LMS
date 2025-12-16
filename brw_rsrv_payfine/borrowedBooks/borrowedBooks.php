@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <main class="container mt-4"> 
+    <main class="container mt-4">
         <section class="mb-4">
             <div class="d-flex justify-content-start align-items-center w-100">
                 <button class="btn me-2 menu" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav"

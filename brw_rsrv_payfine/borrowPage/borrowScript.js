@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         console.log('Fetching book details for ISBN:', bookISBN);
 
-        //
+
         const response = await fetch(`../API/getBook.php?isbn=${bookISBN}`);
 
         if (!response.ok) {
