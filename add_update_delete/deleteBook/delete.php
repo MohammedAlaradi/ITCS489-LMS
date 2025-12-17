@@ -40,21 +40,21 @@
 
     <div class="offcanvas-body">
         <nav class="nav flex-column">
-            <a class="nav-link btn-primary" href="../search/index.html">Home</a>
+            <a class="nav-link btn-primary" href="../search/index.php">Home</a>
             <hr>
-            <a class="nav-link btn-primary" href="../borrowedBooks/borrowedBooks.html">Borrowed Books</a>
+            <a class="nav-link btn-primary" href="../borrowedBooks/borrowedBooks.php">Borrowed Books</a>
             <hr>
-            <a class="nav-link btn-primary" href="../fine/fine.html">Fine</a>
+            <a class="nav-link btn-primary" href="../fine/fine.php">Fine</a>
             <hr>
-            <a class="nav-link btn-primary" href="../addBook/add.html">Add a New Book</a>
+            <a class="nav-link btn-primary" href="../addBook/add.php">Add a New Book</a>
             <hr>
-            <a class="nav-link btn-primary" href="../updateBook/update.html">Update a Book</a>
+            <a class="nav-link btn-primary" href="../updateBook/update.php">Update a Book</a>
             <hr>
-            <a class="nav-link btn-primary active" href="delete.html">Delete a Book</a>
+            <a class="nav-link btn-primary active" href="delete.php">Delete a Book</a>
             <hr>
-            <a class="nav-link btn-primary" href="../reports/report_generation.html">Reports</a>
+            <a class="nav-link btn-primary" href="../reports/report_generation.php">Reports</a>
             <hr>
-            <a class="nav-link btn-primary" href="../fine/fineupdate.html">Fine Policy</a>
+            <a class="nav-link btn-primary" href="../fine/fineupdate.php">Fine Policy</a>
         </nav>
     </div>
 </div>
@@ -117,3 +117,4 @@
 
 </body>
 </html>
+
