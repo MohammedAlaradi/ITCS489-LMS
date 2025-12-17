@@ -139,7 +139,7 @@ body{
 .sidebar{
   background-color: #124170;
   color: #F6F4F0;
-} 
+}
 
 .nav-link{
   color: #F6F4F0 !important;
@@ -171,4 +171,8 @@ hr{
 
 .rounded{
   border-radius: 0.375rem;
+}
+
+.pay-btn:hover{
+  border-color: #124170;
 }

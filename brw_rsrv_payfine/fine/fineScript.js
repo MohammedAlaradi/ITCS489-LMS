@@ -45,36 +45,52 @@ document.addEventListener('DOMContentLoaded', () => {
       const col = document.createElement('div');
       col.className = 'col-12';
 
-      col.innerHTML = `
-        <div class="card">
-          <div class="row g-0 align-items-center">
-            <div class="col">
-              <div class="card-body">
-                <h5 class="card-title">${Title ?? 'Unknown Book'}</h5>
-                <p class="card-text mb-1">
-                  <strong>ISBN:</strong> ${ISBN ?? '-'}
-                </p>
-                <p class="card-text mb-1">
-                  <strong>Due Date:</strong> ${DueDate ?? '-'}
-                </p>
-                <p class="card-text">
-                  <strong>Fine:</strong> ${FineAmount} BD
-                </p>
-                <span class="badge ${
-                  Status === 'Overdue' ? 'bg-danger' : 'bg-warning text-dark'
-                }">
-                  ${Status}
-                </span>
-              </div>
-            </div>
-            <div class="col-3 pe-4 d-flex align-items-center justify-content-center">
-              <button class="btn btn-primary w-100 pay-btn">
-                Pay
-              </button>
-            </div>
-          </div>
+col.innerHTML = `
+  <div class="card mb-3">
+    <div class="row g-0 align-items-center">
+
+
+      <div class="col-md-2 d-flex align-items-center justify-content-center p-2">
+        <img
+          src="../API/getCover.php?isbn=${encodeURIComponent(ISBN)}"
+          alt="Book Cover"
+          class="img-fluid rounded"
+          style="max-height: 120px; object-fit: contain;"
+        >
+      </div>
+
+      <!-- Book Info -->
+      <div class="col-md-7">
+        <div class="card-body">
+          <h5 class="card-title">${Title ?? 'Unknown Book'}</h5>
+          <p class="card-text mb-1">
+            <strong>ISBN:</strong> ${ISBN ?? '-'}
+          </p>
+          <p class="card-text mb-1">
+            <strong>Due Date:</strong> ${DueDate ?? '-'}
+          </p>
+          <p class="card-text">
+            <strong>Fine:</strong> ${FineAmount} BD
+          </p>
+          <span class="badge ${
+            Status === 'Overdue' ? 'bg-danger' : 'bg-warning text-dark'
+          }">
+            ${Status}
+          </span>
         </div>
-      `;
+      </div>
+
+      <!-- Pay Button -->
+      <div class="col-md-3 pe-4 d-flex align-items-center justify-content-center">
+        <button class="btn btn-primary w-100 pay-btn rounded">
+          Pay
+        </button>
+      </div>
+
+    </div>
+  </div>
+`;
+
 
       container.appendChild(col);
 
